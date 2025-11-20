@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Your Perfect Deck - MTG Deck Builder</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="deck-finder.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎲 Find Your Perfect Deck!</h1>
+            <p class="subtitle">Let us help you discover the perfect deck for your playstyle</p>
+            <div class="header-actions">
+                <a href="index.html" class="back-btn">← Back to Deck Builder</a>
+            </div>
+        </header>
+
+        <div class="finder-container">
+            <!-- Step 1: Format Selection -->
+            <div id="step1" class="step-section active">
+                <div class="step-header">
+                    <span class="step-number">Step 1 of 4</span>
+                    <h2>Choose Your Format</h2>
+                    <p class="step-description">Different formats have different rules and card pools. Pick one to get started!</p>
+                </div>
+                
+                <div class="options-grid">
+                    <div class="option-card" onclick="selectFormat('commander')">
+                        <div class="option-icon">👥</div>
+                        <h3>Commander (EDH)</h3>
+                        <p class="option-description">100-card singleton format perfect for multiplayer games. Most popular casual format!</p>
+                        <ul class="option-details">
+                            <li>100 cards, 1 legendary commander</li>
+                            <li>Multiplayer focused (2-6 players)</li>
+                            <li>Great for social games</li>
+                            <li>🟢 Beginner Friendly</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="option-card" onclick="selectFormat('standard')">
+                        <div class="option-icon">⚡</div>
+                        <h3>Standard</h3>
+                        <p class="option-description">Uses only the most recent card sets. Great for competitive play and staying current.</p>
+                        <ul class="option-details">
+                            <li>60-card minimum deck</li>
+                            <li>Most recent sets only</li>
+                            <li>1v1 competitive format</li>
+                            <li>🟡 Moderate Difficulty</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="option-card" onclick="selectFormat('modern')">
+                        <div class="option-icon">🎯</div>
+                        <h3>Modern</h3>
+                        <p class="option-description">Large card pool with fast, powerful strategies. Competitive and diverse.</p>
+                        <ul class="option-details">
+                            <li>60-card minimum deck</li>
+                            <li>Sets from 2003 onwards</li>
+                            <li>Fast-paced gameplay</li>
+                            <li>🔴 Advanced</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="option-card" onclick="selectFormat('pauper')">
+                        <div class="option-icon">💰</div>
+                        <h3>Pauper</h3>
+                        <p class="option-description">Commons only! Budget-friendly and strategic.</p>
+                        <ul class="option-details">
+                            <li>60-card minimum deck</li>
+                            <li>Common cards only</li>
+                            <li>Very budget-friendly</li>
+                            <li>🟢 Beginner Friendly</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Color Selection -->
+            <div id="step2" class="step-section">
+                <div class="step-header">
+                    <span class="step-number">Step 2 of 4</span>
+                    <h2>Pick Your Colors</h2>
+                    <p class="step-description">Each color represents a different playstyle and philosophy. Choose what appeals to you!</p>
+                </div>
+                
+                <div class="color-options">
+                    <div class="color-option-card white" onclick="selectColor('white')">
+                        <div class="color-symbol">⚪</div>
+                        <h3>White</h3>
+                        <p class="color-philosophy">Law, Order, Protection</p>
+                        <ul class="color-traits">
+                            <li>Small efficient creatures</li>
+                            <li>Life gain and protection</li>
+                            <li>Removal and control</li>
+                            <li>Team strategies</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="color-option-card blue" onclick="selectColor('blue')">
+                        <div class="color-symbol">🔵</div>
+                        <h3>Blue</h3>
+                        <p class="color-philosophy">Knowledge, Control, Manipulation</p>
+                        <ul class="color-traits">
+                            <li>Counter spells</li>
+                            <li>Card draw</li>
+                            <li>Flying creatures</li>
+                            <li>Bounce and control</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="color-option-card black" onclick="selectColor('black')">
+                        <div class="color-symbol">⚫</div>
+                        <h3>Black</h3>
+                        <p class="color-philosophy">Power, Ambition, Sacrifice</p>
+                        <ul class="color-traits">
+                            <li>Creature destruction</li>
+                            <li>Card advantage through sacrifice</li>
+                            <li>Graveyard strategies</li>
+                            <li>Life as a resource</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="color-option-card red" onclick="selectColor('red')">
+                        <div class="color-symbol">🔴</div>
+                        <h3>Red</h3>
+                        <p class="color-philosophy">Chaos, Freedom, Passion</p>
+                        <ul class="color-traits">
+                            <li>Direct damage</li>
+                            <li>Fast aggressive creatures</li>
+                            <li>Burn spells</li>
+                            <li>Chaos and randomness</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="color-option-card green" onclick="selectColor('green')">
+                        <div class="color-symbol">🟢</div>
+                        <h3>Green</h3>
+                        <p class="color-philosophy">Nature, Growth, Community</p>
+                        <ul class="color-traits">
+                            <li>Big creatures</li>
+                            <li>Mana ramp</li>
+                            <li>Artifact/enchantment removal</li>
+                            <li>Token generation</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="color-option-card multicolor" onclick="selectColor('multicolor')">
+                        <div class="color-symbol">🌈</div>
+                        <h3>Multicolor</h3>
+                        <p class="color-philosophy">Combine multiple strategies!</p>
+                        <ul class="color-traits">
+                            <li>Access to multiple abilities</li>
+                            <li>More versatile options</li>
+                            <li>Complex mana base</li>
+                            <li>Powerful synergies</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <button class="nav-btn back-btn-step" onclick="goToStep(1)">← Back</button>
+            </div>
+
+            <!-- Step 3: Gameplay Style -->
+            <div id="step3" class="step-section">
+                <div class="step-header">
+                    <span class="step-number">Step 3 of 4</span>
+                    <h2>Choose Your Playstyle</h2>
+                    <p class="step-description">How do you want to win? Pick the strategy that sounds most fun to you!</p>
+                </div>
+                
+                <div class="options-grid">
+                    <div class="playstyle-card" onclick="selectPlaystyle('aggro')">
+                        <div class="playstyle-icon">⚔️</div>
+                        <h3>Aggro (Aggressive)</h3>
+                        <p class="playstyle-description">Attack fast and win early! Deploy cheap creatures and deal damage quickly.</p>
+                        <div class="playstyle-stats">
+                            <span class="stat-badge">⚡ Fast Games</span>
+                            <span class="stat-badge">🎯 Direct</span>
+                            <span class="stat-badge">💪 Proactive</span>
+                        </div>
+                    </div>
+                    
+                    <div class="playstyle-card" onclick="selectPlaystyle('control')">
+                        <div class="playstyle-icon">🛡️</div>
+                        <h3>Control</h3>
+                        <p class="playstyle-description">Stop opponents' plans and win with powerful late-game spells. Patient and reactive.</p>
+                        <div class="playstyle-stats">
+                            <span class="stat-badge">⏱️ Long Games</span>
+                            <span class="stat-badge">🧠 Tactical</span>
+                            <span class="stat-badge">🛡️ Reactive</span>
+                        </div>
+                    </div>
+                    
+                    <div class="playstyle-card" onclick="selectPlaystyle('midrange')">
+                        <div class="playstyle-icon">⚖️</div>
+                        <h3>Midrange</h3>
+                        <p class="playstyle-description">Balanced approach with efficient creatures and removal. Adapt to any situation!</p>
+                        <div class="playstyle-stats">
+                            <span class="stat-badge">⏱️ Medium Games</span>
+                            <span class="stat-badge">🎯 Flexible</span>
+                            <span class="stat-badge">⚖️ Adaptive</span>
+                        </div>
+                    </div>
+                    
+                    <div class="playstyle-card" onclick="selectPlaystyle('combo')">
+                        <div class="playstyle-icon">🎪</div>
+                        <h3>Combo</h3>
+                        <p class="playstyle-description">Assemble card combinations for explosive wins! Strategic and puzzle-like.</p>
+                        <div class="playstyle-stats">
+                            <span class="stat-badge">🎲 Variable</span>
+                            <span class="stat-badge">🧩 Complex</span>
+                            <span class="stat-badge">💥 Explosive</span>
+                        </div>
+                    </div>
+                    
+                    <div class="playstyle-card" onclick="selectPlaystyle('tribal')">
+                        <div class="playstyle-icon">🐉</div>
+                        <h3>Tribal</h3>
+                        <p class="playstyle-description">Build around a creature type (Elves, Dragons, Zombies, etc.). Thematic and synergistic!</p>
+                        <div class="playstyle-stats">
+                            <span class="stat-badge">🎨 Thematic</span>
+                            <span class="stat-badge">⚡ Synergy</span>
+                            <span class="stat-badge">🎯 Focused</span>
+                        </div>
+                    </div>
+                    
+                    <div class="playstyle-card" onclick="selectPlaystyle('ramp')">
+                        <div class="playstyle-icon">🌳</div>
+                        <h3>Ramp</h3>
+                        <p class="playstyle-description">Generate lots of mana to cast huge, game-ending threats!</p>
+                        <div class="playstyle-stats">
+                            <span class="stat-badge">⏱️ Late Game</span>
+                            <span class="stat-badge">💎 Big Spells</span>
+                            <span class="stat-badge">🌳 Mana Focus</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="nav-btn back-btn-step" onclick="goToStep(2)">← Back</button>
+            </div>
+
+            <!-- Step 4: Difficulty Level -->
+            <div id="step4" class="step-section">
+                <div class="step-header">
+                    <span class="step-number">Step 4 of 4</span>
+                    <h2>Choose Difficulty Level</h2>
+                    <p class="step-description">How complex do you want your deck to be? Be honest - you can always level up later!</p>
+                </div>
+                
+                <div class="difficulty-options">
+                    <div class="difficulty-card beginner" onclick="selectDifficulty('beginner')">
+                        <div class="difficulty-icon">🌱</div>
+                        <h3>Beginner</h3>
+                        <p class="difficulty-description">New to Magic? Start here! Simple, straightforward strategies that are easy to learn.</p>
+                        <ul class="difficulty-features">
+                            <li>✓ Simple game plan</li>
+                            <li>✓ Easy to pilot</li>
+                            <li>✓ Clear win conditions</li>
+                            <li>✓ Budget-friendly options</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="difficulty-card intermediate" onclick="selectDifficulty('intermediate')">
+                        <div class="difficulty-icon">🎯</div>
+                        <h3>Intermediate</h3>
+                        <p class="difficulty-description">Know the basics? Ready for more complex strategies with multiple lines of play.</p>
+                        <ul class="difficulty-features">
+                            <li>✓ Multiple strategies</li>
+                            <li>✓ Some decision-making</li>
+                            <li>✓ Synergy-focused</li>
+                            <li>✓ More interaction</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="difficulty-card advanced" onclick="selectDifficulty('advanced')">
+                        <div class="difficulty-icon">🎓</div>
+                        <h3>Advanced</h3>
+                        <p class="difficulty-description">Experienced player? Dive into complex strategies with intricate lines and deep decision trees.</p>
+                        <ul class="difficulty-features">
+                            <li>✓ Complex interactions</li>
+                            <li>✓ High skill ceiling</li>
+                            <li>✓ Competitive viable</li>
+                            <li>✓ Requires practice</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <button class="nav-btn back-btn-step" onclick="goToStep(3)">← Back</button>
+            </div>
+
+            <!-- Results -->
+            <div id="results" class="step-section">
+                <div class="step-header">
+                    <h2>🎉 Your Perfect Deck Awaits!</h2>
+                    <p class="step-description">Based on your preferences, here are some deck recommendations:</p>
+                </div>
+                
+                <div id="selections-summary" class="selections-summary"></div>
+                
+                <div id="deckRecommendations" class="deck-recommendations"></div>
+                
+                <div class="results-actions">
+                    <button class="nav-btn" onclick="searchRecommendedCards()">🔍 Search for These Cards</button>
+                    <button class="nav-btn secondary" onclick="restartFinder()">🔄 Start Over</button>
+                    <a href="index.html" class="nav-btn secondary">← Back to Deck Builder</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="deck-finder.js"></script>
+</body>
+</html>

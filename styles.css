@@ -141,6 +141,7 @@ header h1 {
     font-weight: bold;
     transition: all 0.3s ease;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    margin: 0 8px;
 }
 
 .advanced-search-link:hover {
@@ -149,6 +150,33 @@ header h1 {
     border-color: #ffd700;
     background: linear-gradient(135deg, #5a4636 0%, #7b5e4d 100%);
 }
+
+/* Deck Finder Button - More Prominent */
+.deck-finder-link {
+    display: inline-block;
+    background: linear-gradient(135deg, #c41e3a 0%, #ff6b6b 100%);
+    color: #ffffff;
+    border: 3px solid #ffd700;
+    padding: 12px 30px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-family: 'Garamond', serif;
+    font-size: 18px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 12px rgba(196, 30, 58, 0.6);
+    margin: 0 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.deck-finder-link:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 8px 16px rgba(196, 30, 58, 0.8), 0 0 20px rgba(255, 215, 0, 0.5);
+    border-color: #ffffff;
+    background: linear-gradient(135deg, #d42e4a 0%, #ff7b7b 100%);
+}
+
 
 .main-content {
     display: grid;
