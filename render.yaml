@@ -1,9 +1,6 @@
 services:
   - type: web
     name: mtg-deck-builder
-    env: node
-    buildCommand: npm install
-    startCommand: npm start
-    envVars:
-      - key: NODE_VERSION
-        value: 18
+    env: static
+    buildCommand: echo "No build needed"
+    staticPublishPath: .
