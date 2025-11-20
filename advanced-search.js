@@ -282,24 +282,37 @@ function displayResults(data) {
 function applySortToResults() {
     if (!currentResults || currentResults.length === 0) return;
     
-    const sortBy = searchSortSelect?.value || 'name';
+    const sortBy = searchSortSelect?.value || 'name-asc';
     
     // Sort the results
     const sortedResults = [...currentResults].sort((a, b) => {
         switch(sortBy) {
-            case 'name':
+            case 'name-asc':
                 return a.name.localeCompare(b.name);
-            case 'cmc':
+            case 'name-desc':
+                return b.name.localeCompare(a.name);
+            case 'cmc-asc':
                 return (a.cmc || 0) - (b.cmc || 0);
-            case 'type':
+            case 'cmc-desc':
+                return (b.cmc || 0) - (a.cmc || 0);
+            case 'type-asc':
                 return (a.type_line || '').localeCompare(b.type_line || '');
-            case 'rarity':
+            case 'type-desc':
+                return (b.type_line || '').localeCompare(a.type_line || '');
+            case 'rarity-asc':
                 const rarityOrder = { common: 1, uncommon: 2, rare: 3, mythic: 4 };
                 return (rarityOrder[a.rarity] || 0) - (rarityOrder[b.rarity] || 0);
-            case 'price':
-                const priceA = parseFloat(a.prices?.usd || a.prices?.usd_foil || 999999);
-                const priceB = parseFloat(b.prices?.usd || b.prices?.usd_foil || 999999);
-                return priceB - priceA; // Descending
+            case 'rarity-desc':
+                const rarityOrder2 = { common: 1, uncommon: 2, rare: 3, mythic: 4 };
+                return (rarityOrder2[b.rarity] || 0) - (rarityOrder2[a.rarity] || 0);
+            case 'price-asc':
+                const priceA1 = parseFloat(a.prices?.usd || a.prices?.usd_foil || 999999);
+                const priceB1 = parseFloat(b.prices?.usd || b.prices?.usd_foil || 999999);
+                return priceA1 - priceB1;
+            case 'price-desc':
+                const priceA2 = parseFloat(a.prices?.usd || a.prices?.usd_foil || 999999);
+                const priceB2 = parseFloat(b.prices?.usd || b.prices?.usd_foil || 999999);
+                return priceB2 - priceA2;
             default:
                 return a.name.localeCompare(b.name);
         }

@@ -155,11 +155,16 @@
                         <div class="sort-controls" style="display: none;">
                             <label for="searchSortSelect">Sort by:</label>
                             <select id="searchSortSelect" class="sort-dropdown">
-                                <option value="name">Card Name</option>
-                                <option value="cmc">Mana Cost</option>
-                                <option value="type">Card Type</option>
-                                <option value="rarity">Rarity</option>
-                                <option value="price">Price</option>
+                                <option value="name-asc">Card Name (A-Z)</option>
+                                <option value="name-desc">Card Name (Z-A)</option>
+                                <option value="cmc-asc">Mana Cost (Low to High)</option>
+                                <option value="cmc-desc">Mana Cost (High to Low)</option>
+                                <option value="type-asc">Card Type (A-Z)</option>
+                                <option value="type-desc">Card Type (Z-A)</option>
+                                <option value="rarity-asc">Rarity (Common to Mythic)</option>
+                                <option value="rarity-desc">Rarity (Mythic to Common)</option>
+                                <option value="price-desc">Price (High to Low)</option>
+                                <option value="price-asc">Price (Low to High)</option>
                             </select>
                         </div>
                         <div id="resultsCount" class="results-count"></div>

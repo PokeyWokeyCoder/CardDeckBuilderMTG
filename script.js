@@ -449,21 +449,31 @@ function updateDeckDisplay() {
     }
 
     // Get selected sort option
-    const sortBy = document.getElementById('deckSortSelect')?.value || 'name';
+    const sortBy = document.getElementById('deckSortSelect')?.value || 'name-asc';
     
     // Sort deck based on selected option
     deck.sort((a, b) => {
         switch(sortBy) {
-            case 'name':
+            case 'name-asc':
                 return a.name.localeCompare(b.name);
-            case 'cmc':
+            case 'name-desc':
+                return b.name.localeCompare(a.name);
+            case 'cmc-asc':
                 return (a.cmc || 0) - (b.cmc || 0);
-            case 'type':
+            case 'cmc-desc':
+                return (b.cmc || 0) - (a.cmc || 0);
+            case 'type-asc':
                 return (a.type_line || '').localeCompare(b.type_line || '');
-            case 'quantity':
-                return b.quantity - a.quantity; // Descending
-            case 'price':
-                return b.price - a.price; // Descending
+            case 'type-desc':
+                return (b.type_line || '').localeCompare(a.type_line || '');
+            case 'quantity-asc':
+                return a.quantity - b.quantity;
+            case 'quantity-desc':
+                return b.quantity - a.quantity;
+            case 'price-asc':
+                return a.price - b.price;
+            case 'price-desc':
+                return b.price - a.price;
             default:
                 return a.name.localeCompare(b.name);
         }
