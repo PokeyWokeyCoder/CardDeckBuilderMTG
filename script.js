@@ -73,6 +73,8 @@ const searchResults = document.getElementById('searchResults');
 const cardPreview = document.getElementById('cardPreview');
 const deckList = document.getElementById('deckList');
 const totalCards = document.getElementById('totalCards');
+const totalLands = document.getElementById('totalLands');
+const totalNonLands = document.getElementById('totalNonLands');
 const totalPrice = document.getElementById('totalPrice');
 const clearDeck = document.getElementById('clearDeck');
 const exportDeck = document.getElementById('exportDeck');
@@ -164,8 +166,10 @@ function clearAdvancedFilters() {
     document.getElementById('rarityFilter').value = '';
     document.getElementById('powerFilter').value = '';
     document.getElementById('toughnessFilter').value = '';
+    document.getElementById('cardTextFilter').value = '';
     selectedColors = [];
     document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector('input[name="colorMode"][value="include"]').checked = true;
 }
 
 // Build search query with filters
@@ -190,10 +194,30 @@ function buildSearchQuery() {
     if (minCmc) filters.push(`cmc>=${minCmc}`);
     if (maxCmc) filters.push(`cmc<=${maxCmc}`);
     
-    // Color filter
+    // Color filter with mode (include/exclude/exact)
     if (selectedColors.length > 0) {
-        const colorQuery = selectedColors.map(c => `c:${c}`).join(' ');
-        filters.push(`(${colorQuery})`);
+        const colorMode = document.querySelector('input[name="colorMode"]:checked').value;
+        
+        if (colorMode === 'include') {
+            // Include: must contain at least one of these colors
+            const colorQuery = selectedColors.map(c => `c:${c}`).join(' OR ');
+            filters.push(`(${colorQuery})`);
+        } else if (colorMode === 'exclude') {
+            // Exclude: must NOT contain any of these colors
+            selectedColors.forEach(c => {
+                filters.push(`-c:${c}`);
+            });
+        } else if (colorMode === 'exact') {
+            // Exact: must be exactly these colors
+            const colorString = selectedColors.join('');
+            filters.push(`c=${colorString}`);
+        }
+    }
+    
+    // Card text/abilities filter
+    const cardText = document.getElementById('cardTextFilter').value.trim();
+    if (cardText) {
+        filters.push(`o:"${cardText}"`);
     }
     
     // Type filter
@@ -366,7 +390,9 @@ function addCardToDeck() {
             imageUrl: currentCard.image_uris?.small || currentCard.card_faces?.[0]?.image_uris?.small || '',
             setCode: currentCard.set.toUpperCase(),
             setName: currentCard.set_name,
-            legality: legality
+            legality: legality,
+            typeLine: currentCard.type_line,
+            isLand: currentCard.type_line.toLowerCase().includes('land')
         });
     }
 
@@ -479,8 +505,16 @@ async function viewDeckCard(cardId) {
 function updateDeckStats() {
     const total = deck.reduce((sum, card) => sum + card.quantity, 0);
     const price = deck.reduce((sum, card) => sum + (card.price * card.quantity), 0);
+    const lands = deck.reduce((sum, card) => {
+        // Check if card is marked as land or has 'land' in type line
+        const isLand = card.isLand || (card.typeLine && card.typeLine.toLowerCase().includes('land'));
+        return sum + (isLand ? card.quantity : 0);
+    }, 0);
+    const nonLands = total - lands;
     
     totalCards.textContent = total;
+    totalLands.textContent = lands;
+    totalNonLands.textContent = nonLands;
     totalPrice.textContent = price.toFixed(2);
 }
 
@@ -656,7 +690,10 @@ async function parseDeckList(text) {
                         price: price,
                         imageUrl: card.image_uris?.small || card.card_faces?.[0]?.image_uris?.small || '',
                         setCode: card.set.toUpperCase(),
-                        setName: card.set_name
+                        setName: card.set_name,
+                        legality: card.legalities[currentFormat],
+                        typeLine: card.type_line,
+                        isLand: card.type_line.toLowerCase().includes('land')
                     });
                 }
                 successCount++;
@@ -944,3 +981,353 @@ async function deleteDeckFromCloud(deckId) {
         alert('Failed to delete deck. Please try again.');
     }
 }
+
+// ===== COMMUNITY DECK BROWSING =====
+let currentViewedDeck = null;
+let currentViewedDeckId = null;
+
+// Event listeners for browse section
+document.getElementById('refreshBrowseBtn')?.addEventListener('click', loadCommunityDecks);
+document.getElementById('browseFormatFilter')?.addEventListener('change', loadCommunityDecks);
+document.getElementById('browseUserFilter')?.addEventListener('input', loadCommunityDecks);
+
+// Modal controls
+const deckViewerModal = document.getElementById('deckViewerModal');
+const closeModalBtn = document.querySelector('.close-modal');
+closeModalBtn?.addEventListener('click', closeViewerModal);
+window.addEventListener('click', (e) => {
+    if (e.target === deckViewerModal) {
+        closeViewerModal();
+    }
+});
+
+// Comment and proposed change buttons
+document.getElementById('postCommentBtn')?.addEventListener('click', postComment);
+document.getElementById('proposeChangeBtn')?.addEventListener('click', proposeChange);
+
+// Load community decks on page load
+setTimeout(() => {
+    if (window.firebaseDb) {
+        loadCommunityDecks();
+    }
+}, 1000);
+
+async function loadCommunityDecks() {
+    const { collection, getDocs, query, where, orderBy } = window.firebaseModules;
+    const communityDecksList = document.getElementById('communityDecksList');
+    
+    if (!communityDecksList) return;
+    
+    communityDecksList.innerHTML = '<p style="color: #9b8365;">Loading decks...</p>';
+    
+    try {
+        const formatFilter = document.getElementById('browseFormatFilter').value;
+        const userFilter = document.getElementById('browseUserFilter').value.toLowerCase();
+        
+        let q = query(collection(window.firebaseDb, 'decks'), orderBy('timestamp', 'desc'));
+        
+        const querySnapshot = await getDocs(q);
+        const decks = [];
+        
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            // Apply filters
+            const matchesFormat = !formatFilter || data.format === formatFilter;
+            const matchesUser = !userFilter || data.owner.toLowerCase().includes(userFilter);
+            
+            if (matchesFormat && matchesUser) {
+                decks.push({
+                    id: doc.id,
+                    ...data
+                });
+            }
+        });
+        
+        if (decks.length === 0) {
+            communityDecksList.innerHTML = '<p style="color: #9b8365;">No decks found matching your filters.</p>';
+            return;
+        }
+        
+        communityDecksList.innerHTML = decks.map(deck => {
+            const totalCards = deck.cards.reduce((sum, card) => sum + card.quantity, 0);
+            const totalPrice = deck.cards.reduce((sum, card) => sum + (card.price * card.quantity), 0);
+            const date = deck.timestamp ? new Date(deck.timestamp.seconds * 1000).toLocaleDateString() : 'Unknown';
+            
+            return `
+                <div class="community-deck-card" onclick="viewDeck('${deck.id}')">
+                    <h4>${deck.name || 'Untitled Deck'}</h4>
+                    <div class="deck-meta">
+                        <span>👤 ${deck.owner}</span> • 
+                        <span>📅 ${date}</span>
+                    </div>
+                    <div class="deck-summary">
+                        <span>🎴 ${totalCards} cards</span> • 
+                        <span>🎯 ${deck.format || 'Unknown'}</span> • 
+                        <span>💰 $${totalPrice.toFixed(2)}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+    } catch (error) {
+        console.error('Error loading community decks:', error);
+        communityDecksList.innerHTML = '<p style="color: #d97c6a;">Error loading decks. Please try again.</p>';
+    }
+}
+
+async function viewDeck(deckId) {
+    const { doc, getDoc } = window.firebaseModules;
+    
+    try {
+        const deckRef = doc(window.firebaseDb, 'decks', deckId);
+        const deckSnap = await getDoc(deckRef);
+        
+        if (!deckSnap.exists()) {
+            alert('Deck not found!');
+            return;
+        }
+        
+        currentViewedDeck = deckSnap.data();
+        currentViewedDeckId = deckId;
+        
+        // Populate modal
+        document.getElementById('viewedDeckName').textContent = currentViewedDeck.name || 'Untitled Deck';
+        document.getElementById('viewedDeckOwner').textContent = `👤 ${currentViewedDeck.owner}`;
+        document.getElementById('viewedDeckFormat').textContent = `🎯 ${currentViewedDeck.format || 'Unknown'}`;
+        
+        const totalCards = currentViewedDeck.cards.reduce((sum, card) => sum + card.quantity, 0);
+        const totalPrice = currentViewedDeck.cards.reduce((sum, card) => sum + (card.price * card.quantity), 0);
+        const lands = currentViewedDeck.cards.filter(card => card.isLand).reduce((sum, card) => sum + card.quantity, 0);
+        document.getElementById('viewedDeckStats').textContent = `🎴 ${totalCards} cards • 🏔️ ${lands} lands • 💰 $${totalPrice.toFixed(2)}`;
+        
+        // Display deck list
+        const viewedDeckList = document.getElementById('viewedDeckList');
+        viewedDeckList.innerHTML = currentViewedDeck.cards.map(card => `
+            <div class="viewed-card-item">
+                <div>
+                    <span class="card-name">${card.quantity}x ${card.name}</span>
+                    ${card.legality ? `<span class="legality-badge ${card.legality.toLowerCase()}">${card.legality}</span>` : ''}
+                </div>
+                <div class="card-info">
+                    ${card.manaCost || ''} • $${(card.price * card.quantity).toFixed(2)}
+                </div>
+            </div>
+        `).join('');
+        
+        // Load comments and proposed changes
+        await loadComments(deckId);
+        await loadProposedChanges(deckId);
+        
+        // Show modal
+        deckViewerModal.style.display = 'block';
+        
+    } catch (error) {
+        console.error('Error viewing deck:', error);
+        alert('Failed to load deck. Please try again.');
+    }
+}
+
+function closeViewerModal() {
+    deckViewerModal.style.display = 'none';
+    currentViewedDeck = null;
+    currentViewedDeckId = null;
+}
+
+// ===== COMMENTS SYSTEM =====
+async function loadComments(deckId) {
+    const { collection, query, where, getDocs, orderBy } = window.firebaseModules;
+    const commentsList = document.getElementById('commentsList');
+    
+    try {
+        const q = query(
+            collection(window.firebaseDb, 'comments'),
+            where('deckId', '==', deckId),
+            orderBy('timestamp', 'desc')
+        );
+        
+        const querySnapshot = await getDocs(q);
+        
+        if (querySnapshot.empty) {
+            commentsList.innerHTML = '<p style="color: #9b8365; font-size: 0.9em;">No comments yet. Be the first to comment!</p>';
+            return;
+        }
+        
+        commentsList.innerHTML = querySnapshot.docs.map(doc => {
+            const comment = doc.data();
+            const date = comment.timestamp ? new Date(comment.timestamp.seconds * 1000).toLocaleString() : 'Just now';
+            
+            return `
+                <div class="comment-item">
+                    <div class="comment-header">
+                        <span class="comment-author">${comment.author}</span>
+                        <span class="comment-time">${date}</span>
+                    </div>
+                    <div class="comment-text">${comment.text}</div>
+                </div>
+            `;
+        }).join('');
+        
+    } catch (error) {
+        console.error('Error loading comments:', error);
+        commentsList.innerHTML = '<p style="color: #d97c6a;">Error loading comments.</p>';
+    }
+}
+
+async function postComment() {
+    if (!currentUser) {
+        alert('Please log in to post a comment.');
+        return;
+    }
+    
+    const commentInput = document.getElementById('commentInput');
+    const commentText = commentInput.value.trim();
+    
+    if (!commentText) {
+        alert('Please enter a comment.');
+        return;
+    }
+    
+    const { collection, addDoc, serverTimestamp } = window.firebaseModules;
+    
+    try {
+        await addDoc(collection(window.firebaseDb, 'comments'), {
+            deckId: currentViewedDeckId,
+            author: currentUser,
+            text: commentText,
+            timestamp: serverTimestamp()
+        });
+        
+        commentInput.value = '';
+        await loadComments(currentViewedDeckId);
+        
+    } catch (error) {
+        console.error('Error posting comment:', error);
+        alert('Failed to post comment. Please try again.');
+    }
+}
+
+// ===== PROPOSED CHANGES SYSTEM =====
+async function loadProposedChanges(deckId) {
+    const { collection, query, where, getDocs, orderBy } = window.firebaseModules;
+    const proposedChangesList = document.getElementById('proposedChangesList');
+    
+    try {
+        const q = query(
+            collection(window.firebaseDb, 'proposedChanges'),
+            where('deckId', '==', deckId),
+            orderBy('timestamp', 'desc')
+        );
+        
+        const querySnapshot = await getDocs(q);
+        
+        if (querySnapshot.empty) {
+            proposedChangesList.innerHTML = '<p style="color: #9b8365; font-size: 0.9em;">No proposed changes yet.</p>';
+            return;
+        }
+        
+        const isOwner = currentUser === currentViewedDeck.owner;
+        
+        proposedChangesList.innerHTML = querySnapshot.docs.map(doc => {
+            const change = doc.data();
+            const date = change.timestamp ? new Date(change.timestamp.seconds * 1000).toLocaleString() : 'Just now';
+            const actionClass = change.action === 'add' ? 'add' : 'remove';
+            
+            return `
+                <div class="proposed-change-item">
+                    <div class="change-header">
+                        <span class="change-author">${change.author}</span>
+                        <span class="change-time">${date}</span>
+                    </div>
+                    <div class="change-details">
+                        <span class="change-action-badge ${actionClass}">${change.action.toUpperCase()}</span>
+                        ${change.quantity}x ${change.cardName}
+                    </div>
+                    ${change.reason ? `<div class="change-reason">Reason: ${change.reason}</div>` : ''}
+                    ${isOwner && change.status === 'pending' ? `
+                        <div class="owner-actions">
+                            <button class="owner-action-btn accept" onclick="respondToChange('${doc.id}', 'accepted')">✓ Accept</button>
+                            <button class="owner-action-btn reject" onclick="respondToChange('${doc.id}', 'rejected')">✗ Reject</button>
+                        </div>
+                    ` : ''}
+                    ${change.status !== 'pending' ? `<div style="color: ${change.status === 'accepted' ? '#90ee90' : '#ff6b6b'}; font-size: 0.85em; margin-top: 5px;">${change.status === 'accepted' ? '✓ Accepted' : '✗ Rejected'}</div>` : ''}
+                </div>
+            `;
+        }).join('');
+        
+    } catch (error) {
+        console.error('Error loading proposed changes:', error);
+        proposedChangesList.innerHTML = '<p style="color: #d97c6a;">Error loading proposed changes.</p>';
+    }
+}
+
+async function proposeChange() {
+    if (!currentUser) {
+        alert('Please log in to propose a change.');
+        return;
+    }
+    
+    if (currentUser === currentViewedDeck.owner) {
+        alert('You cannot propose changes to your own deck. Edit it directly!');
+        return;
+    }
+    
+    const action = document.getElementById('changeAction').value;
+    const cardName = document.getElementById('changeCardName').value.trim();
+    const quantity = parseInt(document.getElementById('changeQuantity').value) || 1;
+    const reason = document.getElementById('changeReason').value.trim();
+    
+    if (!cardName) {
+        alert('Please enter a card name.');
+        return;
+    }
+    
+    const { collection, addDoc, serverTimestamp } = window.firebaseModules;
+    
+    try {
+        await addDoc(collection(window.firebaseDb, 'proposedChanges'), {
+            deckId: currentViewedDeckId,
+            author: currentUser,
+            action: action,
+            cardName: cardName,
+            quantity: quantity,
+            reason: reason,
+            status: 'pending',
+            timestamp: serverTimestamp()
+        });
+        
+        // Clear inputs
+        document.getElementById('changeCardName').value = '';
+        document.getElementById('changeQuantity').value = '1';
+        document.getElementById('changeReason').value = '';
+        
+        await loadProposedChanges(currentViewedDeckId);
+        alert('Change proposed successfully!');
+        
+    } catch (error) {
+        console.error('Error proposing change:', error);
+        alert('Failed to propose change. Please try again.');
+    }
+}
+
+async function respondToChange(changeId, response) {
+    const { doc, updateDoc } = window.firebaseModules;
+    
+    try {
+        const changeRef = doc(window.firebaseDb, 'proposedChanges', changeId);
+        await updateDoc(changeRef, {
+            status: response
+        });
+        
+        await loadProposedChanges(currentViewedDeckId);
+        alert(`Change ${response}!`);
+        
+    } catch (error) {
+        console.error('Error responding to change:', error);
+        alert('Failed to respond to change. Please try again.');
+    }
+}
+
+// Make functions globally accessible
+window.viewDeck = viewDeck;
+window.respondToChange = respondToChange;
+

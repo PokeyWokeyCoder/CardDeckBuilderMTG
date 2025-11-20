@@ -77,6 +77,11 @@
                             
                             <div class="filter-group">
                                 <label>Colors:</label>
+                                <div class="color-mode-selector">
+                                    <label><input type="radio" name="colorMode" value="include" checked> Include</label>
+                                    <label><input type="radio" name="colorMode" value="exclude"> Exclude</label>
+                                    <label><input type="radio" name="colorMode" value="exact"> Exact</label>
+                                </div>
                                 <div class="color-filter">
                                     <button class="color-btn" data-color="W" title="White">⚪</button>
                                     <button class="color-btn" data-color="U" title="Blue">🔵</button>
@@ -85,6 +90,12 @@
                                     <button class="color-btn" data-color="G" title="Green">🟢</button>
                                     <button class="color-btn" data-color="C" title="Colorless">◇</button>
                                 </div>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <label>Card Text/Abilities:</label>
+                                <input type="text" id="cardTextFilter" class="filter-input" placeholder="e.g., flying, haste, draw a card">
+                                <small style="color: #9b8365; font-size: 11px;">Search oracle text for keywords or abilities</small>
                             </div>
                             
                             <div class="filter-group">
@@ -153,6 +164,8 @@
                 </div>
                 <div class="deck-stats">
                     <p>Total Cards: <span id="totalCards">0</span></p>
+                    <p>Lands: <span id="totalLands">0</span></p>
+                    <p>Non-Lands: <span id="totalNonLands">0</span></p>
                     <p class="price-total">Total Price: $<span id="totalPrice">0.00</span></p>
                 </div>
                 <div id="deckList" class="deck-list">
@@ -167,6 +180,77 @@
                     <div id="myDecksList" class="saved-decks-list"></div>
                 </div>
             </section>
+            
+            <!-- Browse Community Decks Section -->
+            <section class="browse-section">
+                <h2>Community Decks</h2>
+                <div class="browse-filters">
+                    <select id="browseFormatFilter" class="filter-select">
+                        <option value="">All Formats</option>
+                        <option value="commander">Commander</option>
+                        <option value="standard">Standard</option>
+                        <option value="modern">Modern</option>
+                        <option value="vintage">Vintage</option>
+                        <option value="legacy">Legacy</option>
+                        <option value="pioneer">Pioneer</option>
+                        <option value="pauper">Pauper</option>
+                    </select>
+                    <input type="text" id="browseUserFilter" placeholder="Filter by user..." class="filter-input">
+                    <button id="refreshBrowseBtn" class="browse-btn">🔄 Refresh</button>
+                </div>
+                <div id="communityDecksList" class="community-decks-grid"></div>
+            </section>
+        </div>
+    </div>
+    
+    <!-- Deck Viewer Modal -->
+    <div id="deckViewerModal" class="modal" style="display: none;">
+        <div class="modal-content deck-viewer-modal">
+            <span class="close-modal">&times;</span>
+            <div class="modal-header">
+                <h2 id="viewedDeckName"></h2>
+                <div class="modal-deck-meta">
+                    <span id="viewedDeckOwner"></span>
+                    <span id="viewedDeckFormat"></span>
+                    <span id="viewedDeckStats"></span>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="deck-viewer-grid">
+                    <div class="deck-viewer-list">
+                        <h3>Deck List</h3>
+                        <div id="viewedDeckList" class="viewed-deck-cards"></div>
+                    </div>
+                    <div class="deck-viewer-sidebar">
+                        <!-- Comments Section -->
+                        <div class="comments-section">
+                            <h3>Comments</h3>
+                            <div id="commentsList" class="comments-list"></div>
+                            <div class="add-comment">
+                                <textarea id="commentInput" placeholder="Add a comment..." rows="3"></textarea>
+                                <button id="postCommentBtn" class="post-comment-btn">Post Comment</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Proposed Changes Section -->
+                        <div class="proposed-changes-section">
+                            <h3>Proposed Changes</h3>
+                            <div id="proposedChangesList" class="proposed-changes-list"></div>
+                            <div class="add-proposed-change">
+                                <label>Suggest a change:</label>
+                                <select id="changeAction" class="change-action-select">
+                                    <option value="add">Add Card</option>
+                                    <option value="remove">Remove Card</option>
+                                </select>
+                                <input type="text" id="changeCardName" placeholder="Card name..." class="change-input">
+                                <input type="number" id="changeQuantity" placeholder="Qty" min="1" max="4" value="1" class="change-qty-input">
+                                <textarea id="changeReason" placeholder="Reason for change..." rows="2"></textarea>
+                                <button id="proposeChangeBtn" class="propose-change-btn">Propose Change</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -175,7 +259,7 @@
         // Import Firebase modules
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, query, where, serverTimestamp, orderBy, addDoc, updateDoc, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
         // Firebase configuration
         const firebaseConfig = {
@@ -208,7 +292,11 @@
             deleteDoc,
             query,
             where,
-            serverTimestamp
+            serverTimestamp,
+            orderBy,
+            addDoc,
+            updateDoc,
+            arrayUnion
         };
     </script>
 
