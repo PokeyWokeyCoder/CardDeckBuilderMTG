@@ -123,8 +123,10 @@ function generateRecommendations() {
     // Display recommendations
     const recommendationsDiv = document.getElementById('deckRecommendations');
     recommendationsDiv.innerHTML = recommendations.map(deck => `
-        <div class="recommendation-card">
-            <h3>${deck.name}</h3>
+        <div class="recommendation-card${deck.isPrecon ? ' precon-deck' : ''}">
+            <h3>${deck.name} ${deck.isPrecon ? '⭐' : ''}</h3>
+            ${deck.isPrecon ? `<div class="precon-badge">Official Precon ${deck.preconYear}</div>` : ''}
+            ${deck.upgradeFrom ? `<div class="upgrade-badge">Upgraded from: ${deck.upgradeFrom}</div>` : ''}
             <div class="recommendation-description">${deck.description}</div>
             <div class="recommendation-details">
                 <strong>Strategy:</strong> ${deck.strategy}<br>
@@ -137,6 +139,13 @@ function generateRecommendations() {
                     ${deck.keyCards.map(card => `<li>${card}</li>`).join('')}
                 </ul>
             </div>
+            ${deck.decklistUrl ? `
+                <div class="decklist-link">
+                    <a href="${deck.decklistUrl}" target="_blank" rel="noopener noreferrer" class="view-decklist-btn">
+                        📋 View Full Decklist
+                    </a>
+                </div>
+            ` : ''}
         </div>
     `).join('');
 }
@@ -144,93 +153,95 @@ function generateRecommendations() {
 // Deck Recommendation Database
 function getDeckRecommendations(format, color, playstyle, difficulty) {
     const deckDatabase = {
-        // Commander Recommendations
+        // Commander Recommendations - Starting with official precons
         Commander: {
             White: {
                 Aggro: {
                     Beginner: [{
-                        name: "Mono-White Soldiers",
-                        description: "Build an army of soldiers and overwhelm your opponents with superior numbers. Simple but effective strategy focused on creature combat.",
-                        strategy: "Play cheap soldier creatures early, use anthem effects to boost them, and attack with overwhelming force.",
-                        budget: "$50-100",
-                        powerLevel: "Casual (5-6)",
-                        keyCards: ["Captain of the Watch", "Field Marshal", "Preeminent Captain", "Darien, King of Kjeldor", "Coat of Arms"]
+                        name: "Anikthea, Hand of Erebos (Precon 2023)",
+                        description: "Official Wizards precon featuring enchantment creatures. Great for learning enchantment synergies.",
+                        strategy: "Play enchantment creatures, bring them back from graveyard, and overwhelm with value.",
+                        budget: "$40-60 (Precon MSRP)",
+                        powerLevel: "Precon (4-5)",
+                        keyCards: ["Anikthea, Hand of Erebos", "Doomwake Giant", "Eidolon of Blossoms", "Kruphix's Insight", "Constellation triggers"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/anikthea-hand-of-erebos",
+                        isPrecon: true,
+                        preconYear: 2023
                     }],
                     Intermediate: [{
-                        name: "Voltron Equipment",
-                        description: "Suit up your commander with powerful equipment and take out opponents with commander damage.",
-                        strategy: "Focus on equipment cards and protection spells to make your commander an unstoppable force.",
-                        budget: "$150-250",
-                        powerLevel: "Focused (6-7)",
-                        keyCards: ["Sword of Feast and Famine", "Colossus Hammer", "Sigarda's Aid", "Puresteel Paladin", "Stoneforge Mystic"]
+                        name: "Lathril, Blade of the Elves (Precon 2021)",
+                        description: "Official elf tribal precon that creates tons of tokens and drains opponents.",
+                        strategy: "Create elf tokens, tap them for mana or to drain opponents, and overwhelm with tribal synergies.",
+                        budget: "$60-80 (Secondary market)",
+                        powerLevel: "Upgraded Precon (6-7)",
+                        keyCards: ["Lathril, Blade of the Elves", "Elvish Warmaster", "Beast Whisperer", "Immaculate Magistrate", "Rhys the Redeemed"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/lathril-blade-of-the-elves",
+                        isPrecon: true,
+                        preconYear: 2021
                     }],
                     Advanced: [{
-                        name: "Stax & Hatebears",
-                        description: "Control the battlefield by restricting opponent actions while building your own board advantage.",
-                        strategy: "Use taxing effects and creature-based disruption to slow opponents while building toward victory.",
-                        budget: "$400+",
+                        name: "Edgar Markov Vampire Tribal (Upgraded Precon)",
+                        description: "Originally a 2017 precon, this vampire tribal deck creates overwhelming board presence.",
+                        strategy: "Play vampires to create tokens with Edgar's eminence ability, go wide with tokens.",
+                        budget: "$300-500 (Fully upgraded)",
                         powerLevel: "Optimized (8-9)",
-                        keyCards: ["Grand Abolisher", "Thalia, Guardian of Thraben", "Rule of Law", "Armageddon", "Weathered Wayfarer"]
+                        keyCards: ["Edgar Markov", "Anointed Procession", "Impact Tremors", "Shared Animosity", "Fierce Guardianship"],
+                        decklistUrl: "https://edhrec.com/commanders/edgar-markov",
+                        isPrecon: false,
+                        upgradeFrom: "Vampiric Bloodlust 2017"
                     }]
                 },
                 Control: {
                     Beginner: [{
-                        name: "Angels & Wraths",
-                        description: "Use board wipes to control the game, then close out with powerful angel creatures.",
-                        strategy: "Clear the board repeatedly with wraths, play resilient angels, and protect them while attacking.",
-                        budget: "$75-125",
-                        powerLevel: "Casual (5-6)",
-                        keyCards: ["Wrath of God", "Akroma, Angel of Wrath", "Avacyn, Angel of Hope", "Archangel of Tithes", "Day of Judgment"]
+                        name: "Planar Portal (Precon 2023)",
+                        description: "Doctor Who themed precon with suspend and time counter mechanics.",
+                        strategy: "Use suspend to cast powerful spells for cheap, control the board with removal.",
+                        budget: "$40-60 (Precon MSRP)",
+                        powerLevel: "Precon (4-5)",
+                        keyCards: ["The Tenth Doctor", "Rose Tyler", "Jhoira of the Ghitu", "Inspiring Refrain", "Sol Ring"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/the-tenth-doctor",
+                        isPrecon: true,
+                        preconYear: 2023
                     }],
                     Intermediate: [{
-                        name: "Enchantress Control",
-                        description: "Lock down opponents with enchantments while drawing cards and building toward victory.",
-                        strategy: "Use enchantments to control the board and gain value, eventually overwhelming with card advantage.",
-                        budget: "$200-300",
+                        name: "Heliod, Sun-Crowned (Community Deck)",
+                        description: "Popular commander deck focused on lifegain combo with Walking Ballista.",
+                        strategy: "Gain life to trigger Heliod, create infinite combo with Walking Ballista for the win.",
+                        budget: "$200-350",
                         powerLevel: "Focused (7-8)",
-                        keyCards: ["Luminarch Ascension", "Sphere of Safety", "Smothering Tithe", "Rest in Peace", "Ghostly Prison"]
+                        keyCards: ["Heliod, Sun-Crowned", "Walking Ballista", "Soul Warden", "Soul's Attendant", "Auriok Champion"],
+                        decklistUrl: "https://edhrec.com/commanders/heliod-sun-crowned",
+                        isPrecon: false
                     }],
                     Advanced: [{
-                        name: "Mono-White Control",
+                        name: "Grand Arbiter Augustin IV Stax",
                         description: "Advanced control deck using white's full suite of answers and lock pieces.",
                         strategy: "Deploy taxing effects and removal efficiently while establishing card advantage through recursion.",
                         budget: "$500+",
                         powerLevel: "Optimized (8-9)",
-                        keyCards: ["Teferi's Protection", "Land Tax", "Enlightened Tutor", "Elesh Norn, Grand Cenobite", "Weathered Wayfarer"]
+                        keyCards: ["Teferi's Protection", "Land Tax", "Enlightened Tutor", "Smothering Tithe", "Rhystic Study"],
+                        decklistUrl: "https://edhrec.com/commanders/grand-arbiter-augustin-iv",
+                        isPrecon: false
                     }]
                 },
-                Midrange: {
+                Ramp: {
                     Beginner: [{
-                        name: "White Tokens",
-                        description: "Create an army of tokens and use them to overwhelm opponents through numbers.",
-                        strategy: "Generate lots of creature tokens, boost them with anthems, and attack in waves.",
-                        budget: "$60-100",
+                        name: "Seton, Krosan Protector Druids (Precon-style)",
+                        description: "Mono-green druid tribal that ramps into big threats.",
+                        strategy: "Play druids, tap them for mana, cast huge creatures and overrun.",
+                        budget: "$75-125",
                         powerLevel: "Casual (5-6)",
-                        keyCards: ["Elspeth, Sun's Champion", "Intangible Virtue", "Secure the Wastes", "Cathars' Crusade", "Martial Coup"]
-                    }],
-                    Intermediate: [{
-                        name: "Lifegain Value",
-                        description: "Gain life to trigger powerful effects and outlast opponents in the long game.",
-                        strategy: "Build life total while generating value, eventually winning through combat or combo.",
-                        budget: "$150-250",
-                        powerLevel: "Focused (6-7)",
-                        keyCards: ["Aetherflux Reservoir", "Soul Warden", "Soul's Attendant", "Heliod, Sun-Crowned", "Walking Ballista"]
-                    }],
-                    Advanced: [{
-                        name: "Mono-White Midrange",
-                        description: "Balanced deck with efficient creatures, removal, and card advantage engines.",
-                        strategy: "Deploy threats efficiently while maintaining answers, winning through superior resource management.",
-                        budget: "$400+",
-                        powerLevel: "Optimized (8)",
-                        keyCards: ["Esper Sentinel", "Mangara, the Diplomat", "Smothering Tithe", "Ephemerate", "Land Tax"]
+                        keyCards: ["Seton, Krosan Protector", "Llanowar Elves", "Elvish Archdruid", "Beast Whisperer", "Craterhoof Behemoth"],
+                        decklistUrl: "https://edhrec.com/commanders/seton-krosan-protector",
+                        isPrecon: false
                     }]
                 }
             },
             Blue: {
                 Control: {
                     Beginner: [{
-                        name: "Big Blue Sea Creatures",
-                        description: "Control the early game with counterspells, then deploy massive sea creatures to finish.",
+                        name: "Faceless Menace (Precon 2020)",
+                        description: "Official morph-themed precon featuring Kadena, Slinking Sorcerer.",
                         strategy: "Counter threats, draw cards, and win with large creatures like leviathans and krakens.",
                         budget: "$75-125",
                         powerLevel: "Casual (5-6)",
@@ -283,470 +294,596 @@ function getDeckRecommendations(format, color, playstyle, difficulty) {
             Black: {
                 Aggro: {
                     Beginner: [{
-                        name: "Zombie Tribal",
-                        description: "Swarm the board with zombies and overwhelm opponents with undead hordes.",
-                        strategy: "Play lots of zombies, use tribal synergies, and attack relentlessly.",
-                        budget: "$60-100",
+                        name: "Undead Unleashed (Wilhelt, the Rotcleaver)",
+                        description: "Official Zombie tribal precon from Midnight Hunt Commander 2021 featuring Wilhelt, the Rotcleaver.",
+                        strategy: "Flood the board with zombie tokens, sacrifice for value, and overwhelm with undead synergies.",
+                        budget: "$40-70",
                         powerLevel: "Casual (5-6)",
-                        keyCards: ["Gravecrawler", "Death Baron", "Cemetery Reaper", "Army of the Damned", "Endless Ranks of the Dead"]
+                        keyCards: ["Wilhelt, the Rotcleaver", "Zombie Apocalypse", "Gravecrawler", "Cemetery Reaper", "Rooftop Storm"],
+                        isPrecon: true,
+                        preconYear: 2021,
+                        decklistUrl: "https://www.mtggoldfish.com/deck/4365842#paper"
                     }],
                     Intermediate: [{
-                        name: "Aristocrats Sacrifice",
-                        description: "Sacrifice creatures for value, draining opponents and building advantage.",
-                        strategy: "Create sacrifice loops for value, drain life, and recur threats.",
-                        budget: "$150-250",
+                        name: "Shirei, Shizo's Caretaker (Aristocrats)",
+                        description: "Popular EDHREC commander that recurs small creatures for massive value through sacrifice effects.",
+                        strategy: "Sacrifice 1-power creatures repeatedly each turn, draining life and generating resources.",
+                        budget: "$150-220",
                         powerLevel: "Focused (6-7)",
-                        keyCards: ["Blood Artist", "Zulaport Cutthroat", "Grave Pact", "Ashnod's Altar", "Pitiless Plunderer"]
+                        keyCards: ["Shirei, Shizo's Caretaker", "Blood Artist", "Zulaport Cutthroat", "Viscera Seer", "Skullclamp"],
+                        decklistUrl: "https://edhrec.com/commanders/shirei-shizos-caretaker"
                     }],
                     Advanced: [{
-                        name: "Fast Black Aggro",
-                        description: "Highly efficient black aggro with powerful finishers and disruption.",
-                        strategy: "Deploy threats efficiently, disrupt opponents, and close quickly with strong creatures.",
-                        budget: "$400+",
-                        powerLevel: "Optimized (8)",
-                        keyCards: ["Dark Confidant", "Phyrexian Obliterator", "Toxic Deluge", "Bitterblossom", "Sheoldred, the Apocalypse"]
+                        name: "Yawgmoth, Thran Physician (Combo Aggro)",
+                        description: "Competitive mono-black combo deck that chains sacrifice abilities into lethal combos.",
+                        strategy: "Build creature engines with undying/persist, sacrifice for card advantage and combo kills.",
+                        budget: "$450-650",
+                        powerLevel: "Optimized (8-9)",
+                        keyCards: ["Yawgmoth, Thran Physician", "Geralf's Messenger", "Nest of Scarabs", "Phyrexian Altar", "Mikaeus, the Unhallowed"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/commander-yawgmoth-thran-physician#paper"
                     }]
                 },
                 Control: {
                     Beginner: [{
-                        name: "Mono-Black Removal",
-                        description: "Kill everything opponents play, then win with whatever creatures survive.",
-                        strategy: "Use black's excellent removal suite to control the board, then deploy threats.",
-                        budget: "$70-120",
+                        name: "Draconic Dissent (Precon 2023)",
+                        description: "Official Rakdos dragons precon from Commander Masters 2023 with removal and big fliers.",
+                        strategy: "Control the board with removal spells, ramp with treasure, deploy dragon threats.",
+                        budget: "$45-80",
                         powerLevel: "Casual (5-6)",
-                        keyCards: ["Murder", "Doom Blade", "Damnation", "Gray Merchant of Asphodel", "Kokusho, the Evening Star"]
+                        keyCards: ["Kolaghan, the Storm's Fury", "Crux of Fate", "Murder", "Damnation", "Moonveil Dragon"],
+                        isPrecon: true,
+                        preconYear: 2023,
+                        decklistUrl: "https://www.mtggoldfish.com/deck/5842561#paper"
                     }],
                     Intermediate: [{
-                        name: "Reanimator Control",
-                        description: "Fill your graveyard, then bring back powerful creatures at a discount.",
-                        strategy: "Self-mill and discard to fill graveyard, reanimate threats, control with removal.",
-                        budget: "$200-300",
-                        powerLevel: "Focused (7)",
-                        keyCards: ["Reanimate", "Animate Dead", "Entomb", "Buried Alive", "Griselbrand"]
+                        name: "Sheoldred, the Apocalypse (Life Drain)",
+                        description: "Popular mono-black control using Phyrexian Praetor to punish card draw while gaining life.",
+                        strategy: "Use removal to control threats, drain life with Sheoldred triggers, win with value.",
+                        budget: "$280-380",
+                        powerLevel: "Focused (7-8)",
+                        keyCards: ["Sheoldred, the Apocalypse", "Phyrexian Arena", "Necropotence", "Toxic Deluge", "Crypt Ghast"],
+                        decklistUrl: "https://edhrec.com/commanders/sheoldred-the-apocalypse"
                     }],
                     Advanced: [{
-                        name: "Competitive Black Control",
-                        description: "Optimized control deck with efficient removal and powerful threats.",
-                        strategy: "Control resources efficiently, establish card advantage, and close with resilient threats.",
-                        budget: "$500+",
-                        powerLevel: "Optimized (8-9)",
-                        keyCards: ["Necropotence", "Demonic Tutor", "Toxic Deluge", "Bloodchief Ascension", "K'rrik, Son of Yawgmoth"]
+                        name: "Competitive Black Control (K'rrik)",
+                        description: "Highly tuned mono-black control that uses life as a resource for explosive plays.",
+                        strategy: "Pay life instead of mana with K'rrik, chain powerful spells, combo kill or lock out opponents.",
+                        budget: "$700+",
+                        powerLevel: "Optimized (9)",
+                        keyCards: ["K'rrik, Son of Yawgmoth", "Necropotence", "Aetherflux Reservoir", "Bolas's Citadel", "Demonic Tutor"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/commander-k-rrik-son-of-yawgmoth#paper"
+                    }]
+                },
+                Combo: {
+                    Beginner: [{
+                        name: "Enduring Enchantments (Precon 2023)",
+                        description: "Official Abzan enchantress precon from Wilds of Eldraine Commander 2023.",
+                        strategy: "Build board state with enchantments, gain value from triggers, and combo with Sanguine Bond effects.",
+                        budget: "$40-75",
+                        powerLevel: "Casual (5-6)",
+                        keyCards: ["Sanguine Bond", "Exquisite Blood", "Skybind", "Ethereal Armor", "Heliod's Punishment"],
+                        isPrecon: true,
+                        preconYear: 2023,
+                        decklistUrl: "https://www.mtggoldfish.com/deck/5842565#paper"
+                    }],
+                    Intermediate: [{
+                        name: "Mikaeus + Triskelion Combo",
+                        description: "Classic two-card infinite combo deck in mono-black using undying synergies.",
+                        strategy: "Tutor for Mikaeus and Triskelion, then loop damage infinitely to kill the table.",
+                        budget: "$220-320",
+                        powerLevel: "Focused (7-8)",
+                        keyCards: ["Mikaeus, the Unhallowed", "Triskelion", "Walking Ballista", "Demonic Tutor", "Buried Alive"],
+                        decklistUrl: "https://edhrec.com/commanders/mikaeus-the-unhallowed"
+                    }],
+                    Advanced: [{
+                        name: "Ad Nauseam Storm (Competitive)",
+                        description: "cEDH storm deck that uses Ad Nauseam to draw the entire deck and combo kill.",
+                        strategy: "Resolve Ad Nauseam, draw most of your deck, generate mana, and win with Tendrils or Oracle.",
+                        budget: "$850+",
+                        powerLevel: "Competitive (9-10)",
+                        keyCards: ["Ad Nauseam", "Necropotence", "Dark Ritual", "Cabal Ritual", "Demonic Consultation"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/commander-sidisi-undead-vizier#paper"
                     }]
                 }
             },
             Red: {
                 Aggro: {
                     Beginner: [{
-                        name: "Dragon Tribal",
-                        description: "Ramp into powerful dragons and burn opponents down with fire-breathing fury.",
-                        strategy: "Use mana ramp to cast dragons early, then attack with flying creatures.",
-                        budget: "$75-125",
+                        name: "Draconic Rage (Precon 2021)",
+                        description: "Official Gruul dragons precon from Adventures in the Forgotten Realms Commander 2021.",
+                        strategy: "Ramp hard, cast dragons, attack with overwhelming flying power and burn effects.",
+                        budget: "$35-65",
                         powerLevel: "Casual (5-6)",
-                        keyCards: ["Dragon Tempest", "Utvara Hellkite", "Lathliss, Dragon Queen", "Scourge of Valkas", "Dragonspeaker Shaman"]
+                        keyCards: ["Vrondiss, Rage of Ancients", "Dragon's Rage Channeler", "Dragonborn Champion", "Terror of Mount Velus", "Scourge of Valkas"],
+                        isPrecon: true,
+                        preconYear: 2021,
+                        decklistUrl: "https://www.mtggoldfish.com/deck/4180234#paper"
                     }],
                     Intermediate: [{
-                        name: "Goblin Swarm",
-                        description: "Create an overwhelming army of goblins with powerful tribal synergies.",
-                        strategy: "Play lots of goblins, use lords and synergies, and attack with overwhelming numbers.",
-                        budget: "$150-250",
+                        name: "Krenko, Mob Boss (Goblin Tribal)",
+                        description: "Explosive goblin tribal deck that creates exponential token armies and combos off.",
+                        strategy: "Use Krenko to double goblins each turn, then win with overwhelming board presence or combos.",
+                        budget: "$180-280",
                         powerLevel: "Focused (6-7)",
-                        keyCards: ["Krenko, Mob Boss", "Goblin Chieftain", "Purphoros, God of the Forge", "Skirk Prospector", "Goblin Matron"]
+                        keyCards: ["Krenko, Mob Boss", "Goblin Chieftain", "Purphoros, God of the Forge", "Skirk Prospector", "Goblin Matron"],
+                        decklistUrl: "https://edhrec.com/commanders/krenko-mob-boss"
                     }],
                     Advanced: [{
-                        name: "Optimized Red Aggro",
-                        description: "Fast, efficient red aggro with powerful combos and disruption.",
-                        strategy: "Deploy threats quickly, use rituals for explosive turns, and close with damage combos.",
-                        budget: "$400+",
-                        powerLevel: "Optimized (8)",
-                        keyCards: ["Dockside Extortionist", "Grim Monolith", "Wheel of Fortune", "Jeska, Thrice Reborn", "Blood Moon"]
+                        name: "Purphoros, God of the Forge (Optimized)",
+                        description: "Highly tuned mono-red aggro that burns opponents out with token generation triggers.",
+                        strategy: "Create massive token armies, trigger Purphoros repeatedly, win through direct damage.",
+                        budget: "$550-750",
+                        powerLevel: "Optimized (8-9)",
+                        keyCards: ["Purphoros, God of the Forge", "Dockside Extortionist", "Jeska's Will", "Wheel of Fortune", "Goblin Bombardment"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/commander-purphoros-god-of-the-forge#paper"
+                    }]
+                },
+                Control: {
+                    Beginner: [{
+                        name: "Legends' Legacy (Precon 2022)",
+                        description: "Official Jund legends-matter precon from Dominaria United Commander 2022.",
+                        strategy: "Play legendary creatures and spells, control the board, and win with legendary synergies.",
+                        budget: "$40-70",
+                        powerLevel: "Casual (5-6)",
+                        keyCards: ["Reki, the History of Kamigawa", "Arvad the Cursed", "Heroes' Podium", "Day of Destiny", "Urza's Ruinous Blast"],
+                        isPrecon: true,
+                        preconYear: 2022,
+                        decklistUrl: "https://www.mtggoldfish.com/deck/5071683#paper"
+                    }],
+                    Intermediate: [{
+                        name: "Blasphemous Act Tribal (Damage Control)",
+                        description: "Red control deck using board wipes and indestructible creatures to maintain advantage.",
+                        strategy: "Wipe the board repeatedly while protecting your own creatures, win with attrition.",
+                        budget: "$160-260",
+                        powerLevel: "Focused (6-7)",
+                        keyCards: ["Blasphemous Act", "Stuffy Doll", "Boros Reckoner", "Repercussion", "Toralf, God of Fury"],
+                        decklistUrl: "https://edhrec.com/commanders/toralf-god-of-fury-toralfs-hammer"
+                    }],
+                    Advanced: [{
+                        name: "Magda, Brazen Outlaw (Combo Control)",
+                        description: "Competitive dwarf tribal that tutors artifacts and dragons from the library.",
+                        strategy: "Generate treasure tokens, tutor for combo pieces with Magda, protect and win.",
+                        budget: "$650-900",
+                        powerLevel: "Optimized (8-9)",
+                        keyCards: ["Magda, Brazen Outlaw", "Clock of Omens", "Cloudstone Curio", "Ganax, Astral Hunter", "Goldspan Dragon"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/commander-magda-brazen-outlaw#paper"
                     }]
                 },
                 Combo: {
                     Beginner: [{
-                        name: "Copy Spell Combo",
-                        description: "Copy powerful spells multiple times for overwhelming value or combo kills.",
-                        strategy: "Use copy effects to multiply spells, eventually creating infinite loops or massive damage.",
-                        budget: "$80-130",
-                        powerLevel: "Casual (6)",
-                        keyCards: ["Fork", "Reverberate", "Twinflame", "Heat Shimmer", "Dualcaster Mage"]
+                        name: "Timeless Wisdom (Precon 2020)",
+                        description: "Official Jeskai cycling precon from Commander 2020 with spell-based combo potential.",
+                        strategy: "Cycle cards for value, build up resources, and combo off with cycling payoffs.",
+                        budget: "$35-60",
+                        powerLevel: "Casual (5-6)",
+                        keyCards: ["Gavi, Nest Warden", "Shark Typhoon", "Eternal Dragon", "Decree of Silence", "New Perspectives"],
+                        isPrecon: true,
+                        preconYear: 2020,
+                        decklistUrl: "https://www.mtggoldfish.com/deck/2951842#paper"
                     }],
                     Intermediate: [{
-                        name: "Storm Combo",
-                        description: "Cast many spells in one turn to trigger storm and deal lethal damage.",
-                        strategy: "Build mana through rituals, cast many spells, win with storm finishers.",
-                        budget: "$250-350",
+                        name: "Kiki-Jiki, Mirror Breaker (Combo)",
+                        description: "Classic red combo deck using Kiki-Jiki to create infinite creature copies.",
+                        strategy: "Assemble Kiki-Jiki with untap creatures like Zealous Conscripts, create infinite tokens, and win.",
+                        budget: "$240-340",
                         powerLevel: "Focused (7-8)",
-                        keyCards: ["Grapeshot", "Empty the Warrens", "Ruby Medallion", "Jeska's Will", "Underworld Breach"]
+                        keyCards: ["Kiki-Jiki, Mirror Breaker", "Zealous Conscripts", "Deceiver Exarch", "Combat Celebrant", "Imperial Recruiter"],
+                        decklistUrl: "https://edhrec.com/commanders/kiki-jiki-mirror-breaker"
                     }],
                     Advanced: [{
-                        name: "cEDH Red Combo",
-                        description: "Competitive combo deck with fast mana and efficient win conditions.",
-                        strategy: "Generate massive mana quickly and combo kill the table.",
-                        budget: "$700+",
+                        name: "Godo, Bandit Warlord (cEDH Combo)",
+                        description: "Competitive mono-red combo that tutors Helm of the Host for instant wins.",
+                        strategy: "Cast Godo, tutor Helm of the Host, equip and take infinite combat steps for the win.",
+                        budget: "$800+",
                         powerLevel: "Competitive (9-10)",
-                        keyCards: ["Dockside Extortionist", "Mana Crypt", "Chrome Mox", "Grim Monolith", "Underworld Breach"]
+                        keyCards: ["Godo, Bandit Warlord", "Helm of the Host", "Mana Crypt", "Grim Monolith", "Dockside Extortionist"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/commander-godo-bandit-warlord#paper"
                     }]
                 }
             },
             Green: {
                 Ramp: {
                     Beginner: [{
-                        name: "Mono-Green Stompy",
-                        description: "Ramp into massive creatures and trample over opponents.",
-                        strategy: "Play land ramp spells, cast huge creatures, and attack with overwhelming power.",
-                        budget: "$60-100",
+                        name: "Elven Empire (Precon 2021)",
+                        description: "Official elf tribal precon from Kaldheim Commander 2021 featuring Lathril, Blade of the Elves.",
+                        strategy: "Generate elf tokens, tap for massive mana, and win with tribal synergies or token swarms.",
+                        budget: "$35-65",
                         powerLevel: "Casual (5-6)",
-                        keyCards: ["Rampant Growth", "Kodama's Reach", "Craterhoof Behemoth", "Avenger of Zendikar", "Overwhelming Stampede"]
+                        keyCards: ["Lathril, Blade of the Elves", "Elderfang Venom", "Elvish Warmaster", "Imperious Perfect", "Canopy Tactician"],
+                        isPrecon: true,
+                        preconYear: 2021,
+                        decklistUrl: "https://www.mtggoldfish.com/deck/3713651#paper"
                     }],
                     Intermediate: [{
-                        name: "Elf Tribal Ramp",
-                        description: "Use elves to generate massive amounts of mana and overwhelm with creatures.",
-                        strategy: "Play elf mana dorks, use tribal synergies to generate more elves, and win with combat or combo.",
-                        budget: "$175-275",
-                        powerLevel: "Focused (7)",
-                        keyCards: ["Priest of Titania", "Elvish Archdruid", "Craterhoof Behemoth", "Ezuri, Renegade Leader", "Chord of Calling"]
+                        name: "Ezuri, Renegade Leader (Elf Tribal)",
+                        description: "Explosive elf tribal deck that generates infinite mana and overruns with pump effects.",
+                        strategy: "Play elf mana dorks, use tribal synergies, generate infinite mana, and pump team for lethal.",
+                        budget: "$200-300",
+                        powerLevel: "Focused (7-8)",
+                        keyCards: ["Ezuri, Renegade Leader", "Priest of Titania", "Elvish Archdruid", "Craterhoof Behemoth", "Chord of Calling"],
+                        decklistUrl: "https://edhrec.com/commanders/ezuri-renegade-leader"
                     }],
                     Advanced: [{
-                        name: "Competitive Green Ramp",
-                        description: "Hyper-efficient ramp deck with fast combos and overwhelming board presence.",
-                        strategy: "Ramp explosively, deploy powerful threats, and combo kill or overwhelm with creatures.",
-                        budget: "$500+",
+                        name: "Selvala, Heart of the Wilds (Storm Ramp)",
+                        description: "Competitive green ramp deck that chains large creatures into massive card draw and mana generation.",
+                        strategy: "Cast big creatures, untap Selvala repeatedly, generate infinite mana, and win with outlets.",
+                        budget: "$650-850",
                         powerLevel: "Optimized (8-9)",
-                        keyCards: ["Gaea's Cradle", "Survival of the Fittest", "Natural Order", "Worldly Tutor", "Finale of Devastation"]
+                        keyCards: ["Selvala, Heart of the Wilds", "Umbral Mantle", "Staff of Domination", "Temur Sabertooth", "Craterhoof Behemoth"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/commander-selvala-heart-of-the-wilds#paper"
                     }]
                 },
                 Midrange: {
                     Beginner: [{
-                        name: "Beast Tribal",
-                        description: "Play powerful beasts and use them to dominate combat.",
-                        strategy: "Ramp into beasts, use tribal synergies, and win through superior creatures.",
-                        budget: "$70-120",
+                        name: "Nature of the Beast (Precon 2013)",
+                        description: "Official beast tribal precon from Commander 2013 with big creatures and ramp.",
+                        strategy: "Ramp into beasts, use tribal synergies, and win through superior creature combat.",
+                        budget: "$50-90",
                         powerLevel: "Casual (5-6)",
-                        keyCards: ["Garruk's Packleader", "Ravenous Baloth", "Contested Cliffs", "Wirewood Savage", "Krosan Warchief"]
+                        keyCards: ["Marath, Will of the Wild", "Krosan Warchief", "Ravenous Baloth", "Contested Cliffs", "Spearbreaker Behemoth"],
+                        isPrecon: true,
+                        preconYear: 2013,
+                        decklistUrl: "https://www.mtggoldfish.com/deck/1404203#paper"
                     }],
                     Intermediate: [{
-                        name: "+1/+1 Counter Value",
-                        description: "Build creatures with +1/+1 counters and use them for value and combat.",
-                        strategy: "Use counter synergies to grow threats, generate value, and win through combat.",
-                        budget: "$150-250",
+                        name: "Ghired, Conclave Exile (+1/+1 Counters)",
+                        description: "Naya populate deck that creates massive token armies and buffs them with counters.",
+                        strategy: "Create tokens, populate them, use counter synergies to grow threats and win through combat.",
+                        budget: "$170-270",
                         powerLevel: "Focused (6-7)",
-                        keyCards: ["Hardened Scales", "Doubling Season", "Vorinclex, Monstrous Raider", "The Ozolith", "Rishkar, Peema Renegade"]
+                        keyCards: ["Ghired, Conclave Exile", "Doubling Season", "Anointed Procession", "Cathars' Crusade", "Hardened Scales"],
+                        decklistUrl: "https://edhrec.com/commanders/ghired-conclave-exile"
                     }],
                     Advanced: [{
-                        name: "Green Midrange Toolbox",
-                        description: "Use tutors to find answers and threats, adapting to any situation.",
-                        strategy: "Tutor for the right card at the right time, control through creatures, win through value.",
-                        budget: "$450+",
-                        powerLevel: "Optimized (8)",
-                        keyCards: ["Survival of the Fittest", "Chord of Calling", "Green Sun's Zenith", "Finale of Devastation", "Eternal Witness"]
+                        name: "Yisan, the Wanderer Bard (Toolbox)",
+                        description: "Competitive mono-green toolbox that chains creature tutors into powerful combos.",
+                        strategy: "Use Yisan to tutor creatures in ascending order, build engines, and combo win.",
+                        budget: "$600-800",
+                        powerLevel: "Optimized (8-9)",
+                        keyCards: ["Yisan, the Wanderer Bard", "Quirion Ranger", "Wirewood Symbiote", "Temur Sabertooth", "Craterhoof Behemoth"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/commander-yisan-the-wanderer-bard#paper"
                     }]
                 }
             },
             Multicolor: {
                 Aggro: {
                     Beginner: [{
-                        name: "Five-Color Ally Tribal",
-                        description: "Play allies that trigger powerful effects when more allies enter the battlefield.",
-                        strategy: "Chain ally triggers for value, build a board, and attack with buffed creatures.",
-                        budget: "$80-130",
+                        name: "Prismari Performance (Precon 2021)",
+                        description: "Official Izzet spellslinger precon from Strixhaven Commander 2021.",
+                        strategy: "Cast big spells, copy them with magecraft triggers, and win with spell damage or tokens.",
+                        budget: "$35-60",
                         powerLevel: "Casual (5-6)",
-                        keyCards: ["Harabaz Druid", "Hada Freeblade", "Ondu Cleric", "General Tazri", "Hagra Diabolist"]
+                        keyCards: ["Zaffai, Thunder Conductor", "Young Pyromancer", "Thousand-Year Storm", "Surge to Victory", "Metallurgic Summonings"],
+                        isPrecon: true,
+                        preconYear: 2021,
+                        decklistUrl: "https://www.mtggoldfish.com/deck/3971468#paper"
                     }],
                     Intermediate: [{
-                        name: "Five-Color Humans",
-                        description: "Aggressive human tribal with powerful synergies and lords.",
-                        strategy: "Play efficient humans, use tribal synergies, and pressure opponents early.",
-                        budget: "$200-300",
-                        powerLevel: "Focused (6-7)",
-                        keyCards: ["Champion of the Parish", "Thalia's Lieutenant", "Mantis Rider", "General Kudro of Drannith", "Winota, Joiner of Forces"]
+                        name: "Winota, Joiner of Forces (Human Tribal)",
+                        description: "Boros aggro deck that cheats powerful creatures into play through combat triggers.",
+                        strategy: "Attack with non-humans, trigger Winota, cheat humans into play, and overwhelm opponents.",
+                        budget: "$220-320",
+                        powerLevel: "Focused (7-8)",
+                        keyCards: ["Winota, Joiner of Forces", "Agent of Treachery", "Blade Historian", "Angrath's Marauders", "Esika's Chariot"],
+                        decklistUrl: "https://edhrec.com/commanders/winota-joiner-of-forces"
                     }],
                     Advanced: [{
-                        name: "Five-Color Aggro Combo",
-                        description: "Fast aggro deck with combo backup plans and optimal mana base.",
-                        strategy: "Apply pressure while building toward combo kills, adapt based on opposition.",
-                        budget: "$600+",
-                        powerLevel: "Optimized (8-9)",
-                        keyCards: ["Najeela, the Blade-Blossom", "Derevi, Empyrial Tactician", "Nature's Will", "Sword of Feast and Famine", "Bloom Tender"]
+                        name: "Najeela, the Blade-Blossom (Five-Color Aggro)",
+                        description: "Competitive five-color warrior tribal with infinite combat steps combo.",
+                        strategy: "Attack with warriors, trigger Najeela, generate infinite combat steps, and win.",
+                        budget: "$800+",
+                        powerLevel: "Optimized (9-10)",
+                        keyCards: ["Najeela, the Blade-Blossom", "Derevi, Empyrial Tactician", "Nature's Will", "Sword of Feast and Famine", "Bloom Tender"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/commander-najeela-the-blade-blossom#paper"
                     }]
                 },
                 Control: {
                     Beginner: [{
-                        name: "Five-Color Good Stuff",
-                        description: "Play the best cards from all colors, controlling the game with premium removal and threats.",
-                        strategy: "Use fixing to cast powerful spells of all colors, control the board, and win with bombs.",
-                        budget: "$100-150",
+                        name: "Mystic Intellect (Precon 2019)",
+                        description: "Official Jeskai flashback precon from Commander 2019.",
+                        strategy: "Control the board with instants and sorceries, flashback for value, and win with spell-based finishers.",
+                        budget: "$40-70",
                         powerLevel: "Casual (5-6)",
-                        keyCards: ["Golos, Tireless Pilgrim", "Chromatic Lantern", "Utter End", "Sphinx's Revelation", "Primevals' Glorious Rebirth"]
+                        keyCards: ["Sevinne, the Chronoclasm", "Backdraft Hellkite", "Dockside Extortionist", "Increasing Vengeance", "Scroll Rack"],
+                        isPrecon: true,
+                        preconYear: 2019,
+                        decklistUrl: "https://www.mtggoldfish.com/deck/2210896#paper"
                     }],
                     Intermediate: [{
-                        name: "Four/Five-Color Control",
-                        description: "Classic control strategy with access to the best interaction from all colors.",
-                        strategy: "Control all aspects of the game with diverse answers, win with powerful finishers.",
-                        budget: "$300-400",
+                        name: "Atraxa, Praetors' Voice (Superfriends)",
+                        description: "Four-color planeswalker control deck that proliferates loyalty counters.",
+                        strategy: "Deploy planeswalkers, proliferate their loyalty, and win with ultimate abilities or value.",
+                        budget: "$350-450",
                         powerLevel: "Focused (7-8)",
-                        keyCards: ["Cyclonic Rift", "Anguished Unmaking", "Assassin's Trophy", "Smothering Tithe", "Esika's Chariot"]
+                        keyCards: ["Atraxa, Praetors' Voice", "Doubling Season", "Teferi, Hero of Dominaria", "Oko, Thief of Crowns", "The Chain Veil"],
+                        decklistUrl: "https://edhrec.com/commanders/atraxa-praetors-voice"
                     }],
                     Advanced: [{
-                        name: "Five-Color Superfriends",
-                        description: "Use planeswalkers to control the game and generate overwhelming value.",
-                        strategy: "Deploy and protect planeswalkers, build loyalty, and win with ultimate abilities.",
-                        budget: "$500+",
-                        powerLevel: "Optimized (8)",
-                        keyCards: ["Doubling Season", "The Chain Veil", "Teferi, Time Raveler", "Narset, Parter of Veils", "Jace, the Mind Sculptor"]
+                        name: "Kenrith, the Returned King (Five-Color Control)",
+                        description: "Optimized five-color control deck with multiple win conditions and flexible answers.",
+                        strategy: "Control the game with premium interaction, generate value with Kenrith, and combo win.",
+                        budget: "$700+",
+                        powerLevel: "Optimized (8-9)",
+                        keyCards: ["Kenrith, the Returned King", "Thassa's Oracle", "Demonic Consultation", "Smothering Tithe", "Cyclonic Rift"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/commander-kenrith-the-returned-king#paper"
                     }]
                 },
                 Combo: {
                     Beginner: [{
-                        name: "Five-Color Combo Pieces",
-                        description: "Simple infinite combos using multicolor cards and fixing.",
-                        strategy: "Assemble two or three card combos that win the game instantly.",
-                        budget: "$90-140",
+                        name: "Ruthless Regiment (Precon 2020)",
+                        description: "Official Mardu humans precon from Commander 2020 featuring Jirina Kudro.",
+                        strategy: "Build a human army, sacrifice for value, and combo with token generators.",
+                        budget: "$35-60",
                         powerLevel: "Casual (6)",
-                        keyCards: ["Niv-Mizzet, Parun", "Curiosity", "Karametra's Acolyte", "Umbral Mantle", "Axebane Guardian"]
+                        keyCards: ["Jirina Kudro", "Winota, Joiner of Forces", "Loyal Apprentice", "Fireflux Squad", "Martial Coup"],
+                        isPrecon: true,
+                        preconYear: 2020,
+                        decklistUrl: "https://www.mtggoldfish.com/deck/2951844#paper"
                     }],
                     Intermediate: [{
-                        name: "Multicolor Combo Value",
-                        description: "Use multicolor synergies to build toward powerful combo finishes.",
-                        strategy: "Generate value through multicolor payoffs while assembling combo pieces.",
-                        budget: "$300-450",
+                        name: "Kinnan, Bonder Prodigy (Mana Doubling Combo)",
+                        description: "Simic combo deck that doubles mana from permanents and chains into infinite mana.",
+                        strategy: "Generate value with mana doublers, assemble infinite mana combos, and win with outlets.",
+                        budget: "$350-500",
                         powerLevel: "Focused (7-8)",
-                        keyCards: ["Sisay, Weatherlight Captain", "Jegantha, the Wellspring", "Kinnan, Bonder Prodigy", "Freed from the Real", "Zacama, Primal Calamity"]
+                        keyCards: ["Kinnan, Bonder Prodigy", "Basalt Monolith", "Mana Reflection", "Freed from the Real", "Dramatic Reversal"],
+                        decklistUrl: "https://edhrec.com/commanders/kinnan-bonder-prodigy"
                     }],
                     Advanced: [{
-                        name: "cEDH Five-Color Combo",
-                        description: "Competitive combo deck with optimal mana base and fast win conditions.",
-                        strategy: "Race to combo kill while disrupting opponents with diverse interaction.",
-                        budget: "$1000+",
+                        name: "The First Sliver (Five-Color Cascade cEDH)",
+                        description: "Competitive five-color food chain combo deck that cascades into victory.",
+                        strategy: "Cast The First Sliver, cascade into Food Chain, exile creature for infinite mana, cascade into wins.",
+                        budget: "$1200+",
                         powerLevel: "Competitive (9-10)",
-                        keyCards: ["Thassa's Oracle", "Demonic Consultation", "Dockside Extortionist", "Force of Will", "Mana Crypt"]
+                        keyCards: ["The First Sliver", "Food Chain", "Eternal Scourge", "Demonic Consultation", "Thassa's Oracle"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/commander-the-first-sliver#paper"
                     }]
                 }
             }
         },
         
-        // Standard Recommendations (simplified for brevity)
+        // Standard Recommendations
         Standard: {
             White: {
                 Aggro: {
                     Beginner: [{
-                        name: "Mono-White Aggro",
-                        description: "Fast aggressive deck with efficient white creatures and combat tricks.",
-                        strategy: "Play cheap creatures, protect them, and deal 20 damage quickly.",
-                        budget: "$50-80",
+                        name: "Mono-White Weenie (2024 Standard)",
+                        description: "Fast aggressive deck with efficient white creatures and anthems from current Standard.",
+                        strategy: "Deploy cheap creatures quickly, use anthems to buff them, and overwhelm opponents before they stabilize.",
+                        budget: "$80-140",
                         powerLevel: "FNM Ready",
-                        keyCards: ["Thalia, Guardian of Thraben", "Legion's Landing", "Venerated Loxodon", "Benalish Marshal", "History of Benalia"]
+                        keyCards: ["Hopeful Initiate", "Luminarch Aspirant", "Thalia, Guardian of Thraben", "Skrelv, Defector Mite", "Adeline, Resplendent Cathar"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/standard-mono-white-aggro-eld#paper"
                     }]
                 }
             },
             Blue: {
                 Control: {
                     Beginner: [{
-                        name: "Blue-Based Control",
-                        description: "Control deck with counterspells and card draw, winning with big finishers.",
-                        strategy: "Counter threats, draw cards, and win late game with powerful creatures or planeswalkers.",
-                        budget: "$100-150",
+                        name: "Dimir Control (2024 Standard)",
+                        description: "Blue-black control deck with counterspells, removal, and powerful finishers from current meta.",
+                        strategy: "Counter threats, remove creatures, draw cards with card advantage engines, and win late game.",
+                        budget: "$150-220",
                         powerLevel: "FNM Ready",
-                        keyCards: ["Counterspell", "Opt", "Consider", "Hullbreaker Horror", "Memory Deluge"]
+                        keyCards: ["Make Disappear", "Sheoldred, the Apocalypse", "Go for the Throat", "Memory Deluge", "Hullbreaker Horror"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/standard-dimir-control-eld#paper"
                     }]
                 }
             },
             Black: {
                 Midrange: {
                     Beginner: [{
-                        name: "Mono-Black Midrange",
-                        description: "Removal-heavy deck that wins through card advantage and efficient threats.",
-                        strategy: "Remove opponent's threats, generate card advantage, and win with resilient creatures.",
-                        budget: "$75-125",
+                        name: "Mono-Black Midrange (2024 Standard)",
+                        description: "Removal-heavy midrange deck that wins through card advantage and efficient threats from current Standard.",
+                        strategy: "Remove opponent's threats with premium black removal, grind value with Sheoldred, win with big demons.",
+                        budget: "$120-180",
                         powerLevel: "FNM Ready",
-                        keyCards: ["Murderous Rider", "Phyrexian Arena", "Gray Merchant of Asphodel", "Lolth, Spider Queen", "Blood on the Snow"]
+                        keyCards: ["Sheoldred, the Apocalypse", "Invoke Despair", "Cut Down", "Tenacious Underdog", "The Cruelty of Gix"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/standard-mono-black-midrange-eld#paper"
                     }]
                 }
             },
             Red: {
                 Aggro: {
                     Beginner: [{
-                        name: "Mono-Red Aggro",
-                        description: "Classic red aggro with cheap creatures and burn spells.",
-                        strategy: "Deploy threats early, burn face, and win before opponent stabilizes.",
-                        budget: "$60-100",
+                        name: "Mono-Red Aggro (2024 Standard)",
+                        description: "Classic red aggro with cheap creatures and burn spells from current Standard meta.",
+                        strategy: "Deploy efficient threats early, burn face with red spells, and win before opponents stabilize.",
+                        budget: "$90-130",
                         powerLevel: "FNM Ready",
-                        keyCards: ["Monastery Swiftspear", "Lightning Bolt", "Bonecrusher Giant", "Embercleave", "Anax, Hardened in the Forge"]
+                        keyCards: ["Monastery Swiftspear", "Phoenix Chick", "Kumano Faces Kakkazan", "Lightning Strike", "Embercleave"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/standard-mono-red-aggro-eld#paper"
                     }]
                 }
             },
             Green: {
                 Ramp: {
                     Beginner: [{
-                        name: "Green Ramp",
-                        description: "Ramp into big creatures and overwhelm opponents.",
-                        strategy: "Play ramp spells, cast huge threats, and win through combat.",
-                        budget: "$70-110",
+                        name: "Selesnya Tokens (2024 Standard)",
+                        description: "Green-white deck that creates massive token armies and buffs them for overwhelming combat from current Standard.",
+                        strategy: "Create token creatures, use anthems and convoke spells, and win with wide boards.",
+                        strategy: "Create token creatures, use anthems and convoke spells, and win with wide boards.",
+                        budget: "$110-170",
                         powerLevel: "FNM Ready",
-                        keyCards: ["Cultivate", "Llanowar Elves", "Elder Gargaroth", "Vorinclex, Monstrous Raider", "Esika's Chariot"]
+                        keyCards: ["Mondrak, Glory Dominus", "Adeline, Resplendent Cathar", "Intrepid Adversary", "Ossification", "Anointed Peacekeeper"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/standard-selesnya-tokens#paper"
                     }]
                 }
             },
             Multicolor: {
                 Midrange: {
                     Beginner: [{
-                        name: "Two-Color Midrange",
-                        description: "Balanced deck with good creatures, removal, and card advantage.",
-                        strategy: "Play efficient threats and answers, win through superior card quality.",
-                        budget: "$100-150",
+                        name: "Golgari Midrange (2024 Standard)",
+                        description: "Green-black midrange deck with efficient removal, card advantage, and powerful threats from current meta.",
+                        strategy: "Play efficient removal and threats, grind value with graveyard recursion, and win through combat or planeswalkers.",
+                        budget: "$160-240",
                         powerLevel: "FNM Ready",
-                        keyCards: ["Fable of the Mirror-Breaker", "Graveyard Trespasser", "Bloodtithe Harvester", "Corpse Appraiser", "Raffine's Informant"]
+                        keyCards: ["Sheoldred, the Apocalypse", "Liliana of the Veil", "Invoke Despair", "Workshop Warchief", "Glissa Sunslayer"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/standard-golgari-midrange#paper"
                     }]
                 }
             }
         },
         
-        // Modern Recommendations (simplified)
+        // Modern Recommendations
         Modern: {
             White: {
                 Aggro: {
                     Beginner: [{
-                        name: "Soul Sisters",
-                        description: "Lifegain aggro deck that races opponents while gaining life.",
-                        strategy: "Gain life from creatures entering, build board advantage, and win through combat.",
-                        budget: "$100-150",
+                        name: "Soul Sisters (Budget Modern)",
+                        description: "Lifegain aggro deck that races opponents while gaining life - budget-friendly Modern option.",
+                        strategy: "Gain life from creatures entering, build board advantage with life triggers, and win through combat.",
+                        budget: "$120-180",
                         powerLevel: "FNM Ready",
-                        keyCards: ["Soul Warden", "Soul's Attendant", "Serra Ascendant", "Ajani's Pridemate", "Squadron Hawk"]
+                        keyCards: ["Soul Warden", "Soul's Attendant", "Serra Ascendant", "Ajani's Pridemate", "Ranger of Eos"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/modern-soul-sisters#paper"
                     }]
                 }
             },
             Blue: {
                 Control: {
                     Intermediate: [{
-                        name: "UW Control",
-                        description: "Classic control deck with counterspells, wraths, and efficient finishers.",
-                        strategy: "Control the game with counters and removal, win with card advantage.",
-                        budget: "$400-600",
+                        name: "Azorius Control (Modern)",
+                        description: "Classic Modern control deck with counterspells, wraths, and efficient finishers.",
+                        strategy: "Counter threats, wrath the board, draw cards, and win late game with planeswalkers or creatures.",
+                        budget: "$450-650",
                         powerLevel: "Competitive",
-                        keyCards: ["Supreme Verdict", "Cryptic Command", "Snapcaster Mage", "Teferi, Hero of Dominaria", "Counterspell"]
+                        keyCards: ["Supreme Verdict", "Counterspell", "Teferi, Hero of Dominaria", "Shark Typhoon", "Memory Deluge"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/modern-azorius-control#paper"
                     }]
                 }
             },
             Black: {
                 Midrange: {
                     Intermediate: [{
-                        name: "Jund Midrange",
-                        description: "Three-color midrange with excellent removal and card advantage.",
-                        strategy: "Trade resources efficiently, generate card advantage, and win through attrition.",
-                        budget: "$800-1200",
+                        name: "Rakdos Midrange (Modern)",
+                        description: "Black-red midrange with excellent removal, card advantage, and efficient threats.",
+                        strategy: "Remove opponent's threats efficiently, grind card advantage with synergies, and win through attrition.",
+                        budget: "$550-800",
                         powerLevel: "Competitive",
-                        keyCards: ["Thoughtseize", "Lightning Bolt", "Tarmogoyf", "Liliana of the Veil", "Dark Confidant"]
+                        keyCards: ["Grief", "Fury", "Dauthi Voidwalker", "Thoughtseize", "Fable of the Mirror-Breaker"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/modern-rakdos-midrange#paper"
                     }]
                 }
             },
             Red: {
                 Aggro: {
                     Beginner: [{
-                        name: "Burn",
-                        description: "Classic burn deck dealing damage directly to opponent's face.",
-                        strategy: "Cast lightning bolts and lava spikes until opponent is dead.",
-                        budget: "$200-300",
+                        name: "Burn (Modern)",
+                        description: "Classic burn deck dealing damage directly to opponent's face with lightning bolts and friends.",
+                        strategy: "Cast 7 burn spells directly at opponent's face, ignore creatures, win on turn 4-5.",
+                        budget: "$250-350",
                         powerLevel: "Competitive",
-                        keyCards: ["Lightning Bolt", "Lava Spike", "Rift Bolt", "Monastery Swiftspear", "Eidolon of the Great Revel"]
+                        keyCards: ["Lightning Bolt", "Lava Spike", "Rift Bolt", "Monastery Swiftspear", "Eidolon of the Great Revel"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/modern-burn#paper"
                     }]
                 }
             },
             Green: {
                 Combo: {
                     Intermediate: [{
-                        name: "Amulet Titan",
-                        description: "Ramp deck that can combo kill with Primeval Titan.",
-                        strategy: "Use Amulet of Vigor to generate massive mana and cast Titans.",
-                        budget: "$600-900",
+                        name: "Amulet Titan (Modern)",
+                        description: "Ramp deck that can combo kill with Primeval Titan and bounce lands.",
+                        strategy: "Use Amulet of Vigor to untap bounce lands, generate massive mana, and cast Titans to search for combo pieces.",
+                        budget: "$650-950",
                         powerLevel: "Competitive",
-                        keyCards: ["Amulet of Vigor", "Primeval Titan", "Simic Growth Chamber", "Dryad of the Ilysian Grove", "Vesuva"]
+                        keyCards: ["Amulet of Vigor", "Primeval Titan", "Simic Growth Chamber", "Dryad of the Ilysian Grove", "Vesuva"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/modern-amulet-titan#paper"
                     }]
                 }
             },
             Multicolor: {
                 Combo: {
                     Advanced: [{
-                        name: "Four-Color Creativity",
-                        description: "Combo deck using Indomitable Creativity to cheat big threats into play.",
-                        strategy: "Create tokens, sacrifice them with Creativity, and win with huge creatures.",
-                        budget: "$700-1000",
+                        name: "Yawgmoth Combo (Modern)",
+                        description: "Combo deck using Yawgmoth with undying creatures to create infinite loops.",
+                        strategy: "Assemble Yawgmoth with undying creatures, sacrifice for card draw and -1/-1 counters, combo kill with Blood Artist effects.",
+                        budget: "$550-800",
                         powerLevel: "Competitive",
-                        keyCards: ["Indomitable Creativity", "Hard Evidence", "Archon of Cruelty", "Omnath, Locus of Creation", "Teferi, Time Raveler"]
+                        keyCards: ["Yawgmoth, Thran Physician", "Young Wolf", "Strangleroot Geist", "Chord of Calling", "Blood Artist"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/modern-yawgmoth#paper"
                     }]
                 }
             }
         },
         
-        // Pauper Recommendations (simplified)
+        // Pauper Recommendations
         Pauper: {
             White: {
                 Aggro: {
                     Beginner: [{
-                        name: "White Weenie",
-                        description: "Efficient white creatures with combat tricks.",
-                        strategy: "Play cheap creatures and protect them with combat tricks.",
-                        budget: "$20-40",
-                        powerLevel: "Competitive",
-                        keyCards: ["Thraben Inspector", "Kor Skyfisher", "Journey to Nowhere", "Battle Screech", "Guardians' Pledge"]
+                        name: "White Weenie (Pauper)",
+                        description: "Efficient white creatures with combat tricks at common rarity - budget competitive Pauper deck.",
+                        strategy: "Deploy cheap efficient creatures, protect them with tricks, and win through combat damage.",
+                        budget: "$30-55",
+                        powerLevel: "Pauper Competitive",
+                        keyCards: ["Thraben Inspector", "Kor Skyfisher", "Journey to Nowhere", "Battle Screech", "Guardians' Pledge"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/pauper-white-weenie#paper"
                     }]
                 }
             },
             Blue: {
                 Control: {
                     Beginner: [{
-                        name: "Mono-Blue Delver",
-                        description: "Tempo deck with cheap threats and counterspells.",
-                        strategy: "Deploy Delver, flip it, and protect it while countering threats.",
-                        budget: "$25-50",
-                        powerLevel: "Competitive",
-                        keyCards: ["Delver of Secrets", "Spellstutter Sprite", "Ninja of the Deep Hours", "Counterspell", "Snap"]
+                        name: "Faeries (Pauper)",
+                        description: "Tempo deck with evasive threats, counterspells, and card advantage at common rarity.",
+                        strategy: "Deploy faerie threats, protect them with counters, and grind card advantage with ninjas.",
+                        budget: "$40-70",
+                        powerLevel: "Pauper Competitive",
+                        keyCards: ["Spellstutter Sprite", "Ninja of the Deep Hours", "Counterspell", "Snuff Out", "Augur of Bolas"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/pauper-faeries#paper"
                     }]
                 }
             },
             Black: {
                 Control: {
                     Beginner: [{
-                        name: "MBC (Mono-Black Control)",
-                        description: "Control deck with excellent removal and card advantage.",
-                        strategy: "Kill everything, generate card advantage, and win with creatures or drain.",
-                        budget: "$30-60",
-                        powerLevel: "Competitive",
-                        keyCards: ["Chittering Rats", "Cuombajj Witches", "Sign in Blood", "Victim of Night", "Gray Merchant of Asphodel"]
+                        name: "MBC - Mono Black Control (Pauper)",
+                        description: "Classic Pauper control deck with excellent removal suite and card advantage engines.",
+                        strategy: "Kill all creatures with premium removal, generate card advantage with rats, and win with Gray Merchant drain.",
+                        budget: "$45-80",
+                        powerLevel: "Pauper Competitive",
+                        keyCards: ["Chittering Rats", "Cuombajj Witches", "Sign in Blood", "Snuff Out", "Gray Merchant of Asphodel"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/pauper-mbc#paper"
                     }]
                 }
             },
             Red: {
                 Aggro: {
                     Beginner: [{
-                        name: "Red Deck Wins",
-                        description: "Fast red aggro with burn spells and hasty creatures.",
-                        strategy: "Deal 20 damage as fast as possible with creatures and burn.",
-                        budget: "$20-40",
-                        powerLevel: "Competitive",
-                        keyCards: ["Monastery Swiftspear", "Lightning Bolt", "Chain Lightning", "Fireblast", "Thermo-Alchemist"]
+                        name: "Red Deck Wins (Pauper)",
+                        description: "Fast red aggro with burn spells and hasty creatures at common rarity.",
+                        strategy: "Deal 20 damage as fast as possible with efficient creatures and burn spells to the face.",
+                        budget: "$35-60",
+                        powerLevel: "Pauper Competitive",
+                        keyCards: ["Monastery Swiftspear", "Lightning Bolt", "Chain Lightning", "Fireblast", "Kuldotha Rebirth"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/pauper-red-deck-wins#paper"
                     }]
                 }
             },
             Green: {
                 Ramp: {
                     Beginner: [{
-                        name: "Elves",
-                        description: "Elf tribal deck that generates lots of mana and creatures.",
-                        strategy: "Play elves, make mana, and overwhelm with creatures.",
-                        budget: "$35-70",
-                        powerLevel: "Competitive",
-                        keyCards: ["Llanowar Elves", "Priest of Titania", "Quirion Ranger", "Timberwatch Elf", "Distant Melody"]
+                        name: "Elves (Pauper)",
+                        description: "Elf tribal deck that generates massive amounts of mana and creature advantage.",
+                        strategy: "Play elf mana dorks, generate exponential mana, and overwhelm with creature count and pump effects.",
+                        budget: "$50-90",
+                        powerLevel: "Pauper Competitive",
+                        keyCards: ["Llanowar Elves", "Priest of Titania", "Quirion Ranger", "Timberwatch Elf", "Distant Melody"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/pauper-elves#paper"
                     }]
                 }
             },
             Multicolor: {
                 Midrange: {
                     Beginner: [{
-                        name: "Boros Bully",
-                        description: "Two-color midrange with efficient creatures and removal.",
-                        strategy: "Play efficient threats and removal, win through combat.",
-                        budget: "$40-70",
-                        powerLevel: "Competitive",
-                        keyCards: ["Kor Skyfisher", "Galvanic Blast", "Lightning Bolt", "Battle Screech", "Rally the Peasants"]
+                        name: "Boros Bully (Pauper)",
+                        description: "Red-white midrange deck with efficient creatures and removal at common rarity.",
+                        strategy: "Play efficient creatures, use pump spells and removal, and win through aggressive combat and reach.",
+                        budget: "$55-90",
+                        powerLevel: "Pauper Competitive",
+                        keyCards: ["Kor Skyfisher", "Galvanic Blast", "Lightning Bolt", "Battle Screech", "Rally the Peasants"],
+                        decklistUrl: "https://www.mtggoldfish.com/archetype/pauper-boros-bully#paper"
                     }]
                 }
             }

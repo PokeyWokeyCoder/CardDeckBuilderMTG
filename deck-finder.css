@@ -483,6 +483,7 @@
     margin-bottom: 10px;
 }
 
+
 .key-cards ul {
     list-style: none;
     padding: 0;
@@ -499,6 +500,64 @@
     content: '⭐';
     position: absolute;
     left: 0;
+}
+
+/* Precon deck styling */
+.precon-deck {
+    border-color: #ffd700 !important;
+    background: linear-gradient(135deg, #3d2817 0%, #5a3a25 100%);
+}
+
+.precon-badge {
+    display: inline-block;
+    background: rgba(255, 215, 0, 0.2);
+    color: #ffd700;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: bold;
+    margin-bottom: 15px;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+}
+
+.upgrade-badge {
+    display: inline-block;
+    background: rgba(139, 111, 71, 0.3);
+    color: #c4b39a;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    margin-bottom: 15px;
+    border: 2px solid #8b6f47;
+}
+
+.decklist-link {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #6b5535;
+    text-align: center;
+}
+
+.view-decklist-btn {
+    display: inline-block;
+    background: linear-gradient(135deg, #4a3626 0%, #6b4e3d 100%);
+    color: #ffd700;
+    border: 2px solid #8b6f47;
+    padding: 12px 25px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-family: 'Garamond', serif;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.view-decklist-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
+    border-color: #ffd700;
+    background: linear-gradient(135deg, #5a4636 0%, #7b5e4d 100%);
 }
 
 .results-actions {
@@ -518,3 +577,4 @@
         font-size: 2em;
     }
 }
+
