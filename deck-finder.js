@@ -35,7 +35,8 @@ function goToStep(stepNumber) {
 
 // Format Selection (Step 1)
 function selectFormat(format) {
-    selections.format = format;
+    // Capitalize the format for database lookup
+    selections.format = format.charAt(0).toUpperCase() + format.slice(1);
     
     // Update UI
     document.querySelectorAll('.option-card').forEach(card => {
@@ -51,7 +52,8 @@ function selectFormat(format) {
 
 // Color Selection (Step 2)
 function selectColor(color) {
-    selections.color = color;
+    // Capitalize the color for database lookup
+    selections.color = color.charAt(0).toUpperCase() + color.slice(1);
     
     // Update UI
     document.querySelectorAll('.color-option-card').forEach(card => {
@@ -68,12 +70,14 @@ function selectColor(color) {
 // Generate Deck Recommendations
 function generateRecommendations() {
     // Update selections summary
-    const summaryDiv = document.querySelector('.selections-summary');
-    summaryDiv.innerHTML = `
-        <h3>Your Preferences</h3>
-        <div class="selection-item"><span class="selection-label">Format:</span> ${selections.format}</div>
-        <div class="selection-item"><span class="selection-label">Color:</span> ${selections.color}</div>
-    `;
+    const summaryDiv = document.getElementById('selections-summary');
+    if (summaryDiv) {
+        summaryDiv.innerHTML = `
+            <h3>Your Preferences</h3>
+            <div class="selection-item"><span class="selection-label">Format:</span> ${selections.format}</div>
+            <div class="selection-item"><span class="selection-label">Color:</span> ${selections.color}</div>
+        `;
+    }
     
     // Generate recommendations based on selections - get all decks for the color
     const recommendations = getDeckRecommendations(
@@ -81,11 +85,18 @@ function generateRecommendations() {
         selections.color
     );
     
+    console.log('Generated recommendations:', recommendations.length, 'decks');
+    
     // Show results
     showStep('results');
     
     // Display recommendations
     const recommendationsDiv = document.getElementById('deckRecommendations');
+    if (!recommendationsDiv) {
+        console.error('Could not find deckRecommendations div');
+        return;
+    }
+    
     recommendationsDiv.innerHTML = recommendations.map(deck => `
         <div class="recommendation-card${deck.isPrecon ? ' precon-deck' : ''}">
             <h3>${deck.name} ${deck.isPrecon ? '⭐' : ''}</h3>
@@ -856,26 +867,35 @@ function getDeckRecommendations(format, color) {
     
     // Navigate through the database and collect all decks for the chosen color
     try {
+        console.log('Looking for format:', format, 'color:', color);
         const formatDecks = deckDatabase[format];
-        if (!formatDecks) return getDefaultRecommendation();
+        if (!formatDecks) {
+            console.error('Format not found:', format);
+            return getDefaultRecommendation();
+        }
         
         const allDecks = [];
         
         // Collect decks from the selected color
         if (formatDecks[color]) {
+            console.log('Found color decks for:', color);
             const colorDecks = formatDecks[color];
             // Iterate through all playstyles in this color
             Object.keys(colorDecks).forEach(playstyle => {
                 Object.keys(colorDecks[playstyle]).forEach(difficulty => {
                     if (Array.isArray(colorDecks[playstyle][difficulty])) {
+                        console.log('Adding', colorDecks[playstyle][difficulty].length, 'decks from', playstyle, difficulty);
                         allDecks.push(...colorDecks[playstyle][difficulty]);
                     }
                 });
             });
+        } else {
+            console.warn('No decks found for color:', color);
         }
         
         // Also include Multicolor decks if the user selected a specific color
         if (color !== 'Multicolor' && formatDecks.Multicolor) {
+            console.log('Adding multicolor decks');
             const multicolorDecks = formatDecks.Multicolor;
             Object.keys(multicolorDecks).forEach(playstyle => {
                 Object.keys(multicolorDecks[playstyle]).forEach(difficulty => {
@@ -886,6 +906,7 @@ function getDeckRecommendations(format, color) {
             });
         }
         
+        console.log('Total decks found:', allDecks.length);
         return allDecks.length > 0 ? allDecks : getDefaultRecommendation();
     } catch (error) {
         console.error('Error finding recommendations:', error);

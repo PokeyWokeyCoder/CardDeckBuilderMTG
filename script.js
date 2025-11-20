@@ -451,6 +451,8 @@ function updateDeckDisplay() {
     // Get selected sort option
     const sortBy = document.getElementById('deckSortSelect')?.value || 'default';
     
+    console.log('Sorting by:', sortBy);
+    
     // Sort deck based on selected option (only if not default)
     if (sortBy !== 'default') {
         deck.sort((a, b) => {
@@ -478,9 +480,12 @@ function updateDeckDisplay() {
                     return a.price - b.price;
                 case 'price-desc':
                     // Push N/A prices to the end when sorting descending
-                    if (!a.price || a.price === 0) return 1;
-                    if (!b.price || b.price === 0) return -1;
-                    return b.price - a.price;
+                    const priceA = a.price || 0;
+                    const priceB = b.price || 0;
+                    console.log('Comparing prices:', a.name, priceA, 'vs', b.name, priceB);
+                    if (priceA === 0) return 1;
+                    if (priceB === 0) return -1;
+                    return priceB - priceA;
                 default:
                     return 0; // Keep original order
             }
