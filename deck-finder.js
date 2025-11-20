@@ -3,9 +3,7 @@
 // State Management
 let selections = {
     format: null,
-    color: null,
-    playstyle: null,
-    difficulty: null
+    color: null
 };
 
 // Initialize on page load
@@ -61,43 +59,10 @@ function selectColor(color) {
     });
     event.target.closest('.color-option-card').classList.add('selected');
     
-    // Auto-advance after brief delay
-    setTimeout(() => {
-        showStep(3);
-    }, 300);
-}
-
-// Playstyle Selection (Step 3)
-function selectPlaystyle(playstyle) {
-    selections.playstyle = playstyle;
-    
-    // Update UI
-    document.querySelectorAll('.playstyle-card').forEach(card => {
-        card.classList.remove('selected');
-    });
-    event.target.closest('.playstyle-card').classList.add('selected');
-    
-    // Auto-advance after brief delay
-    setTimeout(() => {
-        showStep(4);
-    }, 300);
-}
-
-// Difficulty Selection (Step 4)
-function selectDifficulty(difficulty) {
-    selections.difficulty = difficulty;
-    
-    // Update UI
-    document.querySelectorAll('.difficulty-card').forEach(card => {
-        card.classList.remove('selected');
-    });
-    event.target.closest('.difficulty-card').classList.add('selected');
-    
-    // Generate recommendations after brief delay
+    // Generate and display recommendations immediately
     setTimeout(() => {
         generateRecommendations();
-        showStep('results');
-    }, 500);
+    }, 300);
 }
 
 // Generate Deck Recommendations
@@ -108,17 +73,16 @@ function generateRecommendations() {
         <h3>Your Preferences</h3>
         <div class="selection-item"><span class="selection-label">Format:</span> ${selections.format}</div>
         <div class="selection-item"><span class="selection-label">Color:</span> ${selections.color}</div>
-        <div class="selection-item"><span class="selection-label">Playstyle:</span> ${selections.playstyle}</div>
-        <div class="selection-item"><span class="selection-label">Experience Level:</span> ${selections.difficulty}</div>
     `;
     
-    // Generate recommendations based on selections
+    // Generate recommendations based on selections - get all decks for the color
     const recommendations = getDeckRecommendations(
         selections.format,
-        selections.color,
-        selections.playstyle,
-        selections.difficulty
+        selections.color
     );
+    
+    // Show results
+    showStep('results');
     
     // Display recommendations
     const recommendationsDiv = document.getElementById('deckRecommendations');
@@ -151,7 +115,7 @@ function generateRecommendations() {
 }
 
 // Deck Recommendation Database
-function getDeckRecommendations(format, color, playstyle, difficulty) {
+function getDeckRecommendations(format, color) {
     const deckDatabase = {
         // Commander Recommendations - Starting with official precons
         Commander: {
@@ -890,21 +854,39 @@ function getDeckRecommendations(format, color, playstyle, difficulty) {
         }
     };
     
-    // Navigate through the database
+    // Navigate through the database and collect all decks for the chosen color
     try {
         const formatDecks = deckDatabase[format];
         if (!formatDecks) return getDefaultRecommendation();
         
-        const colorDecks = formatDecks[color];
-        if (!colorDecks) return getDefaultRecommendation();
+        const allDecks = [];
         
-        const playstyleDecks = colorDecks[playstyle];
-        if (!playstyleDecks) return getDefaultRecommendation();
+        // Collect decks from the selected color
+        if (formatDecks[color]) {
+            const colorDecks = formatDecks[color];
+            // Iterate through all playstyles in this color
+            Object.keys(colorDecks).forEach(playstyle => {
+                Object.keys(colorDecks[playstyle]).forEach(difficulty => {
+                    if (Array.isArray(colorDecks[playstyle][difficulty])) {
+                        allDecks.push(...colorDecks[playstyle][difficulty]);
+                    }
+                });
+            });
+        }
         
-        const difficultyDecks = playstyleDecks[difficulty];
-        if (!difficultyDecks) return getDefaultRecommendation();
+        // Also include Multicolor decks if the user selected a specific color
+        if (color !== 'Multicolor' && formatDecks.Multicolor) {
+            const multicolorDecks = formatDecks.Multicolor;
+            Object.keys(multicolorDecks).forEach(playstyle => {
+                Object.keys(multicolorDecks[playstyle]).forEach(difficulty => {
+                    if (Array.isArray(multicolorDecks[playstyle][difficulty])) {
+                        allDecks.push(...multicolorDecks[playstyle][difficulty]);
+                    }
+                });
+            });
+        }
         
-        return difficultyDecks;
+        return allDecks.length > 0 ? allDecks : getDefaultRecommendation();
     } catch (error) {
         console.error('Error finding recommendations:', error);
         return getDefaultRecommendation();
@@ -916,7 +898,7 @@ function getDefaultRecommendation() {
     return [{
         name: "Custom Deck",
         description: "We don't have a specific recommendation for this exact combination, but here's a general approach!",
-        strategy: `Build a ${selections.playstyle} deck in ${selections.format} format using ${selections.color} colors. Focus on synergy and consistency.`,
+        strategy: `Build a deck in ${selections.format} format using ${selections.color} colors. Focus on synergy and consistency.`,
         budget: "$100-200",
         powerLevel: "Casual-Focused (6-7)",
         keyCards: ["Consider cards that fit your playstyle", "Look for synergies in your chosen colors", "Include proper mana fixing", "Add interaction and card draw", "Include win conditions"]
@@ -953,13 +935,11 @@ function searchRecommendedCards() {
 function restartFinder() {
     selections = {
         format: null,
-        color: null,
-        playstyle: null,
-        difficulty: null
+        color: null
     };
     
     // Reset all selections
-    document.querySelectorAll('.option-card, .color-option-card, .playstyle-card, .difficulty-card').forEach(card => {
+    document.querySelectorAll('.option-card, .color-option-card').forEach(card => {
         card.classList.remove('selected');
     });
     
