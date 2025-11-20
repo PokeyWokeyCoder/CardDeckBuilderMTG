@@ -180,7 +180,7 @@ header h1 {
 
 .main-content {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 20px;
     margin-bottom: 20px;
 }
@@ -273,6 +273,30 @@ h3 {
     display: flex;
     gap: 10px;
     margin-bottom: 15px;
+    align-items: center;
+}
+
+.toggle-results-btn {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #5a3a25, #3d2817);
+    color: #ff9f43;
+    border: 2px solid #6b5535;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.toggle-results-btn:hover {
+    background: linear-gradient(135deg, #6b5535, #5a3a25);
+    border-color: #8b6f47;
+    color: #ffd700;
+}
+
+.toggle-results-btn:active {
+    transform: scale(0.98);
 }
 
 #cardSearch {
@@ -659,41 +683,122 @@ h3 {
 .version-selector label {
     display: block;
     color: #ffd700;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.version-table-container {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 10px;
+    border-radius: 5px;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.version-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.version-table thead {
+    position: sticky;
+    top: 0;
+    background: #2a1f15;
+    z-index: 1;
+}
+
+.version-table th {
+    padding: 8px;
+    text-align: left;
+    color: #ffd700;
+    border-bottom: 2px solid #8b6f47;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.version-table td {
+    padding: 10px 8px;
+    border-bottom: 1px solid rgba(139, 111, 71, 0.3);
+    color: #f4e8d0;
+    background: rgba(26, 20, 16, 0.5);
+}
+
+.version-row:hover {
+    background: rgba(139, 111, 71, 0.4) !important;
+}
+
+.version-row:hover td {
+    background: rgba(139, 111, 71, 0.4);
+}
+
+.version-row.selected-version td {
+    background: rgba(255, 215, 0, 0.25);
+}
+
+.version-row.selected-version {
+    background: rgba(255, 215, 0, 0.25);
+}
+
+.version-note {
+    margin-top: 8px;
+    font-size: 11px;
+    color: #ff9f43;
+    font-style: italic;
+    text-align: center;
+}
+
+.price-info {
+    margin-top: 10px;
+    padding: 12px;
+    background: rgba(74, 124, 89, 0.2);
+    border-radius: 5px;
+    border: 2px solid #5a8c6a;
+}
+
+.price-info strong {
+    display: block;
+    color: #ffd700;
     margin-bottom: 8px;
     font-size: 14px;
 }
 
-.version-selector select {
-    width: 100%;
-    padding: 8px;
-    background: #1a1410;
+.price-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.price-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+    border-left: 3px solid #4a7c59;
+}
+
+.price-label {
+    font-size: 13px;
     color: #f4e8d0;
-    border: 2px solid #6b5535;
-    border-radius: 5px;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-.version-selector select:hover {
-    border-color: #8b6f47;
-}
-
-.version-selector .version-count {
-    margin-top: 8px;
-    font-size: 12px;
-    color: #ff9f43;
-    font-style: italic;
-}
-
-.price-info {
-    font-size: 20px;
     font-weight: bold;
-    color: #4a7c59;
-    margin-top: 10px;
-    padding: 10px;
-    background: rgba(74, 124, 89, 0.2);
-    border-radius: 5px;
-    border: 2px solid #5a8c6a;
+}
+
+.price-value {
+    font-size: 16px;
+    font-weight: bold;
+    color: #5fd68a;
+}
+
+.foil-price {
+    color: #ffd700;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+}
+
+.etched-price {
+    color: #d4af37;
+    text-shadow: 0 0 5px rgba(212, 175, 55, 0.4);
 }
 
 .add-card-section {
@@ -826,25 +931,32 @@ h3 {
 
 .sort-dropdown {
     padding: 8px 12px;
-    background: rgba(26, 20, 16, 0.8);
+    background: #ffffff;
     border: 2px solid #8b6f47;
     border-radius: 5px;
-    color: #f4e8d0;
+    color: #000000;
     font-family: 'Garamond', 'Georgia', serif;
     font-size: 14px;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .sort-dropdown:hover {
     border-color: #ffd700;
-    background: rgba(139, 111, 71, 0.3);
+    background: #f0f0f0;
 }
 
 .sort-dropdown:focus {
     outline: none;
     border-color: #ffd700;
-    box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+
+.sort-dropdown option {
+    background: #ffffff;
+    color: #000000;
+    padding: 8px;
 }
 
 .deck-list {

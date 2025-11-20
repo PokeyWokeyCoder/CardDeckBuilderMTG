@@ -36,133 +36,25 @@
         </header>
 
         <div class="main-content">
-            <!-- Card Search Section -->
+            <!-- Combined Search and Card Display Section -->
             <section class="search-section">
-                <h2>Search Cards</h2>
-                
-                <!-- Format Selector -->
-                <div class="format-selector">
-                    <label for="formatSelect">Deck Format:</label>
-                    <select id="formatSelect" class="format-dropdown">
-                        <option value="commander">Commander (EDH)</option>
-                        <option value="standard">Standard</option>
-                        <option value="modern">Modern</option>
-                        <option value="vintage">Vintage</option>
-                        <option value="legacy">Legacy</option>
-                        <option value="pioneer">Pioneer</option>
-                        <option value="pauper">Pauper</option>
-                    </select>
-                    <div id="formatInfo" class="format-info"></div>
-                </div>
+                <h2>Card Search</h2>
                 
                 <div class="search-box">
                     <input type="text" id="cardSearch" placeholder="Enter card name..." autocomplete="off">
                     <button id="searchBtn">Search</button>
-                </div>
-                <div class="set-filter">
-                    <label for="setFilter">Filter by Set (optional):</label>
-                    <input type="text" id="setFilter" placeholder="e.g., M21, ZNR, STX..." autocomplete="off">
-                    <small>Leave blank to search all sets</small>
+                    <button id="toggleSearchResults" class="toggle-results-btn" style="display: none;" onclick="toggleSearchResults()">
+                        <span id="toggleSearchIcon">▼</span> Hide Results
+                    </button>
                 </div>
                 
-                <!-- Advanced Filters -->
-                <div class="advanced-filters">
-                    <button id="toggleFilters" class="toggle-filters-btn">⚙️ Advanced Filters</button>
-                    <div id="filtersPanel" class="filters-panel" style="display: none;">
-                        <div class="filter-grid">
-                            <div class="filter-group">
-                                <label>Mana Cost:</label>
-                                <div class="mana-filter">
-                                    <input type="number" id="minCmc" placeholder="Min" min="0" max="20">
-                                    <span>to</span>
-                                    <input type="number" id="maxCmc" placeholder="Max" min="0" max="20">
-                                </div>
-                            </div>
-                            
-                            <div class="filter-group">
-                                <label>Include Colors:</label>
-                                <small style="color: #9b8365; font-size: 11px;">Cards must have at least one of these</small>
-                                <div class="color-filter" id="includeColorFilter">
-                                    <button class="color-btn include-color" data-color="W" title="White">⚪</button>
-                                    <button class="color-btn include-color" data-color="U" title="Blue">🔵</button>
-                                    <button class="color-btn include-color" data-color="B" title="Black">⚫</button>
-                                    <button class="color-btn include-color" data-color="R" title="Red">🔴</button>
-                                    <button class="color-btn include-color" data-color="G" title="Green">🟢</button>
-                                    <button class="color-btn include-color" data-color="C" title="Colorless">◇</button>
-                                </div>
-                            </div>
-                            
-                            <div class="filter-group">
-                                <label>Exclude Colors:</label>
-                                <small style="color: #9b8365; font-size: 11px;">Cards must NOT have any of these</small>
-                                <div class="color-filter" id="excludeColorFilter">
-                                    <button class="color-btn exclude-color" data-color="W" title="White">⚪</button>
-                                    <button class="color-btn exclude-color" data-color="U" title="Blue">🔵</button>
-                                    <button class="color-btn exclude-color" data-color="B" title="Black">⚫</button>
-                                    <button class="color-btn exclude-color" data-color="R" title="Red">🔴</button>
-                                    <button class="color-btn exclude-color" data-color="G" title="Green">🟢</button>
-                                    <button class="color-btn exclude-color" data-color="C" title="Colorless">◇</button>
-                                </div>
-                            </div>
-                            
-                            <div class="filter-group">
-                                <label>Card Text/Abilities:</label>
-                                <input type="text" id="cardTextFilter" class="filter-input" placeholder="e.g., flying, haste, draw a card">
-                                <small style="color: #9b8365; font-size: 11px;">Search oracle text for keywords or abilities</small>
-                            </div>
-                            
-                            <div class="filter-group">
-                                <label>Card Type:</label>
-                                <select id="typeFilter" class="filter-select">
-                                    <option value="">All Types</option>
-                                    <option value="creature">Creature</option>
-                                    <option value="instant">Instant</option>
-                                    <option value="sorcery">Sorcery</option>
-                                    <option value="enchantment">Enchantment</option>
-                                    <option value="artifact">Artifact</option>
-                                    <option value="planeswalker">Planeswalker</option>
-                                    <option value="land">Land</option>
-                                </select>
-                            </div>
-                            
-                            <div class="filter-group">
-                                <label>Rarity:</label>
-                                <select id="rarityFilter" class="filter-select">
-                                    <option value="">All Rarities</option>
-                                    <option value="common">Common</option>
-                                    <option value="uncommon">Uncommon</option>
-                                    <option value="rare">Rare</option>
-                                    <option value="mythic">Mythic</option>
-                                </select>
-                            </div>
-                            
-                            <div class="filter-group">
-                                <label>Power/Toughness:</label>
-                                <div class="pt-filter">
-                                    <input type="text" id="powerFilter" placeholder="Power" maxlength="3">
-                                    <span>/</span>
-                                    <input type="text" id="toughnessFilter" placeholder="Tough" maxlength="3">
-                                </div>
-                            </div>
-                        </div>
-                        <button id="applyFilters" class="apply-filters-btn">Apply Filters</button>
-                        <button id="clearFilters" class="clear-filters-btn">Clear All</button>
-                    </div>
-                </div>
-                
-                <div class="import-section">
-                    <label for="deckImport" class="import-label">Import Deck from File:</label>
-                    <input type="file" id="deckImport" accept=".txt" class="file-input">
-                    <button id="importBtn" class="import-btn">Import Deck</button>
-                </div>
                 <div id="searchResults" class="search-results"></div>
-            </section>
-
-            <!-- Card Display Section -->
-            <section class="card-display">
-                <h2>Selected Card</h2>
-                <div id="cardPreview" class="card-preview">
-                    <p class="placeholder">Search for a card to display details</p>
+                
+                <div style="margin-top: 20px; border-top: 2px solid #6b5535; padding-top: 20px;">
+                    <h3 style="color: #ffd700; margin-bottom: 15px;">Selected Card</h3>
+                    <div id="cardPreview" class="card-preview">
+                        <p class="placeholder">Search for a card to display details</p>
+                    </div>
                 </div>
             </section>
 
@@ -170,6 +62,22 @@
             <section class="deck-section">
                 <div class="deck-header">
                     <h2>Your Deck</h2>
+                    
+                    <!-- Format Selector -->
+                    <div class="format-selector" style="margin: 15px 0;">
+                        <label for="formatSelect">Deck Format:</label>
+                        <select id="formatSelect" class="format-dropdown">
+                            <option value="commander">Commander (EDH)</option>
+                            <option value="standard">Standard</option>
+                            <option value="modern">Modern</option>
+                            <option value="vintage">Vintage</option>
+                            <option value="legacy">Legacy</option>
+                            <option value="pioneer">Pioneer</option>
+                            <option value="pauper">Pauper</option>
+                        </select>
+                        <div id="formatInfo" class="format-info"></div>
+                    </div>
+                    
                     <div class="deck-name-section">
                         <input type="text" id="deckName" placeholder="My Deck" maxlength="50">
                         <button id="saveDeckBtn" class="save-deck-btn" disabled>Save to Cloud</button>
@@ -201,6 +109,11 @@
                     <p class="placeholder">Your deck is empty. Add cards to get started!</p>
                 </div>
                 <div class="deck-actions">
+                    <div class="import-section" style="margin-bottom: 10px;">
+                        <label for="deckImport" class="import-label" style="display: block; margin-bottom: 5px;">Import Deck:</label>
+                        <input type="file" id="deckImport" accept=".txt" class="file-input" style="display: inline-block; width: auto; margin-right: 10px;">
+                        <button id="importBtn" class="import-btn">Import</button>
+                    </div>
                     <button id="exportDeck" class="export-btn">Export Deck</button>
                     <button id="clearDeck" class="clear-btn">Clear Deck</button>
                 </div>
@@ -209,35 +122,35 @@
                     <div id="myDecksList" class="saved-decks-list"></div>
                 </div>
             </section>
-            
-            <!-- Browse Community Decks Section -->
-            <section class="browse-section">
-                <h2>Community Decks</h2>
-                <div class="browse-filters">
-                    <select id="browseFormatFilter" class="filter-select">
-                        <option value="">All Formats</option>
-                        <option value="commander">Commander</option>
-                        <option value="standard">Standard</option>
-                        <option value="modern">Modern</option>
-                        <option value="vintage">Vintage</option>
-                        <option value="legacy">Legacy</option>
-                        <option value="pioneer">Pioneer</option>
-                        <option value="pauper">Pauper</option>
-                    </select>
-                    <input type="text" id="browseUserFilter" placeholder="Filter by user..." class="filter-input">
-                    <select id="communitySortSelect" class="sort-dropdown">
-                        <option value="time-desc">Newest First</option>
-                        <option value="time-asc">Oldest First</option>
-                        <option value="cards-desc">Most Cards</option>
-                        <option value="cards-asc">Fewest Cards</option>
-                        <option value="comments">Most Comments</option>
-                        <option value="name">Deck Name</option>
-                    </select>
-                    <button id="refreshBrowseBtn" class="browse-btn">🔄 Refresh</button>
-                </div>
-                <div id="communityDecksList" class="community-decks-grid"></div>
-            </section>
         </div>
+            
+        <!-- Browse Community Decks Section - Full Width at Bottom -->
+        <section class="browse-section" style="max-width: 1400px; margin: 0 auto 20px;">
+            <h2>Community Decks</h2>
+            <div class="browse-filters">
+                <select id="browseFormatFilter" class="filter-select">
+                    <option value="">All Formats</option>
+                    <option value="commander">Commander</option>
+                    <option value="standard">Standard</option>
+                    <option value="modern">Modern</option>
+                    <option value="vintage">Vintage</option>
+                    <option value="legacy">Legacy</option>
+                    <option value="pioneer">Pioneer</option>
+                    <option value="pauper">Pauper</option>
+                </select>
+                <input type="text" id="browseUserFilter" placeholder="Filter by user..." class="filter-input">
+                <select id="communitySortSelect" class="sort-dropdown">
+                    <option value="time-desc">Newest First</option>
+                    <option value="time-asc">Oldest First</option>
+                    <option value="cards-desc">Most Cards</option>
+                    <option value="cards-asc">Fewest Cards</option>
+                    <option value="comments">Most Comments</option>
+                    <option value="name">Deck Name</option>
+                </select>
+                <button id="refreshBrowseBtn" class="browse-btn">🔄 Refresh</button>
+            </div>
+            <div id="communityDecksList" class="community-decks-grid"></div>
+        </section>
     </div>
     
     <!-- Deck Viewer Modal -->

@@ -63,7 +63,6 @@ const formatRules = {
 // DOM Elements
 const cardSearch = document.getElementById('cardSearch');
 const searchBtn = document.getElementById('searchBtn');
-const setFilter = document.getElementById('setFilter');
 const formatSelect = document.getElementById('formatSelect');
 const formatInfo = document.getElementById('formatInfo');
 const toggleFiltersBtn = document.getElementById('toggleFilters');
@@ -91,19 +90,19 @@ const myDecksSection = document.getElementById('myDecksSection');
 const myDecksList = document.getElementById('myDecksList');
 
 // Event Listeners
-searchBtn.addEventListener('click', searchCard);
-cardSearch.addEventListener('keypress', (e) => {
+if (searchBtn) searchBtn.addEventListener('click', searchCard);
+if (cardSearch) cardSearch.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') searchCard();
 });
-formatSelect.addEventListener('change', updateFormat);
-toggleFiltersBtn.addEventListener('click', toggleFilters);
-applyFiltersBtn.addEventListener('click', searchCard);
-clearFiltersBtn.addEventListener('click', clearAdvancedFilters);
-clearDeck.addEventListener('click', clearDeckList);
-exportDeck.addEventListener('click', exportDeckToFile);
-importBtn.addEventListener('click', importDeckFromFile);
-logoutBtn.addEventListener('click', logout);
-saveDeckBtn.addEventListener('click', saveDeckToCloud);
+if (formatSelect) formatSelect.addEventListener('change', updateFormat);
+if (toggleFiltersBtn) toggleFiltersBtn.addEventListener('click', toggleFilters);
+if (applyFiltersBtn) applyFiltersBtn.addEventListener('click', searchCard);
+if (clearFiltersBtn) clearFiltersBtn.addEventListener('click', clearAdvancedFilters);
+if (clearDeck) clearDeck.addEventListener('click', clearDeckList);
+if (exportDeck) exportDeck.addEventListener('click', exportDeckToFile);
+if (importBtn) importBtn.addEventListener('click', importDeckFromFile);
+if (logoutBtn) logoutBtn.addEventListener('click', logout);
+if (saveDeckBtn) saveDeckBtn.addEventListener('click', saveDeckToCloud);
 
 // Deck sort dropdown
 const deckSortSelect = document.getElementById('deckSortSelect');
@@ -206,20 +205,15 @@ function buildSearchQuery() {
     
     const filters = [];
     
-    // Set filter
-    const setCode = setFilter.value.trim();
-    if (setCode) {
-        filters.push(`set:${setCode}`);
-    }
-    
     // Format legality
     filters.push(`legal:${currentFormat}`);
     
+    // Only add advanced filters if they exist on the page
     // CMC filter
-    const minCmc = document.getElementById('minCmc').value;
-    const maxCmc = document.getElementById('maxCmc').value;
-    if (minCmc) filters.push(`cmc>=${minCmc}`);
-    if (maxCmc) filters.push(`cmc<=${maxCmc}`);
+    const minCmcEl = document.getElementById('minCmc');
+    const maxCmcEl = document.getElementById('maxCmc');
+    if (minCmcEl && minCmcEl.value) filters.push(`cmc>=${minCmcEl.value}`);
+    if (maxCmcEl && maxCmcEl.value) filters.push(`cmc<=${maxCmcEl.value}`);
     
     // Include colors filter
     if (includeColors.length > 0) {
@@ -235,24 +229,24 @@ function buildSearchQuery() {
     }
     
     // Card text/abilities filter
-    const cardText = document.getElementById('cardTextFilter').value.trim();
-    if (cardText) {
-        filters.push(`o:"${cardText}"`);
+    const cardTextEl = document.getElementById('cardTextFilter');
+    if (cardTextEl && cardTextEl.value.trim()) {
+        filters.push(`o:"${cardTextEl.value.trim()}"`);
     }
     
     // Type filter
-    const type = document.getElementById('typeFilter').value;
-    if (type) filters.push(`t:${type}`);
+    const typeEl = document.getElementById('typeFilter');
+    if (typeEl && typeEl.value) filters.push(`t:${typeEl.value}`);
     
     // Rarity filter
-    const rarity = document.getElementById('rarityFilter').value;
-    if (rarity) filters.push(`r:${rarity}`);
+    const rarityEl = document.getElementById('rarityFilter');
+    if (rarityEl && rarityEl.value) filters.push(`r:${rarityEl.value}`);
     
     // Power/Toughness filter
-    const power = document.getElementById('powerFilter').value;
-    const toughness = document.getElementById('toughnessFilter').value;
-    if (power) filters.push(`pow=${power}`);
-    if (toughness) filters.push(`tou=${toughness}`);
+    const powerEl = document.getElementById('powerFilter');
+    const toughnessEl = document.getElementById('toughnessFilter');
+    if (powerEl && powerEl.value) filters.push(`pow=${powerEl.value}`);
+    if (toughnessEl && toughnessEl.value) filters.push(`tou=${toughnessEl.value}`);
     
     // Combine query with filters
     if (filters.length > 0) {
@@ -311,6 +305,29 @@ function displaySearchResults(cards) {
             </div>
         `;
     }).join('');
+    
+    // Show the toggle button
+    const toggleBtn = document.getElementById('toggleSearchResults');
+    if (toggleBtn) {
+        toggleBtn.style.display = 'inline-block';
+    }
+}
+
+// Toggle search results visibility
+function toggleSearchResults() {
+    const resultsDiv = document.getElementById('searchResults');
+    const toggleBtn = document.getElementById('toggleSearchResults');
+    const toggleIcon = document.getElementById('toggleSearchIcon');
+    
+    if (resultsDiv.style.display === 'none') {
+        resultsDiv.style.display = 'block';
+        toggleIcon.textContent = '▼';
+        toggleBtn.innerHTML = '<span id="toggleSearchIcon">▼</span> Hide Results';
+    } else {
+        resultsDiv.style.display = 'none';
+        toggleIcon.textContent = '▶';
+        toggleBtn.innerHTML = '<span id="toggleSearchIcon">▶</span> Show Results';
+    }
 }
 
 // Select a card to display details
@@ -356,6 +373,7 @@ async function loadCardById(cardId) {
         const response = await fetch(`https://api.scryfall.com/cards/${cardId}`);
         const card = await response.json();
         currentCard = card;
+        await fetchCardPrintings(card);
         displayCardDetails(card);
     } catch (error) {
         console.error('Error loading card:', error);
@@ -370,25 +388,44 @@ function displayCardDetails(card) {
         card.card_faces.map(face => `${face.name}: ${face.oracle_text}`).join('\n\n') : 'N/A');
     const typeLine = card.type_line || 'N/A';
     
-    // Get TCGPlayer price
-    const price = card.prices?.usd || card.prices?.usd_foil || '0.00';
-    const priceDisplay = price !== null ? `$${price}` : 'Price not available';
+    // Get all price options for current card
+    const normalPrice = card.prices?.usd;
+    const foilPrice = card.prices?.usd_foil;
+    const etchedPrice = card.prices?.usd_etched;
+    
+    let priceDisplay = '<div class="price-breakdown">';
+    if (normalPrice) priceDisplay += `<div class="price-option"><span class="price-label">Normal:</span> <span class="price-value">$${normalPrice}</span></div>`;
+    if (foilPrice) priceDisplay += `<div class="price-option"><span class="price-label">Foil:</span> <span class="price-value foil-price">$${foilPrice}</span></div>`;
+    if (etchedPrice) priceDisplay += `<div class="price-option"><span class="price-label">Etched:</span> <span class="price-value etched-price">$${etchedPrice}</span></div>`;
+    if (!normalPrice && !foilPrice && !etchedPrice) priceDisplay += '<div class="price-option">Price not available</div>';
+    priceDisplay += '</div>';
     
     // Build version selector if we have multiple printings
     let versionSelector = '';
     if (window.cardPrintings && window.cardPrintings.length > 1) {
+        // Store printings globally for sorting
+        window.currentPrintings = [...window.cardPrintings];
+        
         versionSelector = `
             <div class="version-selector">
-                <label for="versionSelect"><strong>Select Version/Printing:</strong></label>
-                <select id="versionSelect" onchange="switchCardVersion(this.value)">
-                    ${window.cardPrintings.map(printing => {
-                        const printPrice = printing.prices?.usd || printing.prices?.usd_foil || 'N/A';
-                        const priceText = printPrice !== 'N/A' ? ` - $${printPrice}` : ' - Price N/A';
-                        const selected = printing.id === card.id ? ' selected' : '';
-                        return `<option value="${printing.id}"${selected}>${printing.set_name} (${printing.set.toUpperCase()})${priceText}</option>`;
-                    }).join('')}
-                </select>
-                <div class="version-count">${window.cardPrintings.length} versions available</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <label><strong>Available Versions (${window.cardPrintings.length} printings):</strong></label>
+                    <select id="versionSortSelect" onchange="sortCardVersions(this.value)" style="padding: 5px; background: #1a1410; color: #f4e8d0; border: 2px solid #6b5535; border-radius: 5px;">
+                        <option value="default">Release Order</option>
+                        <option value="set-asc">Set Name (A-Z)</option>
+                        <option value="set-desc">Set Name (Z-A)</option>
+                        <option value="rarity-asc">Rarity (Low to High)</option>
+                        <option value="rarity-desc">Rarity (High to Low)</option>
+                        <option value="price-normal-asc">Normal Price (Low to High)</option>
+                        <option value="price-normal-desc">Normal Price (High to Low)</option>
+                        <option value="price-foil-asc">Foil Price (Low to High)</option>
+                        <option value="price-foil-desc">Foil Price (High to Low)</option>
+                    </select>
+                </div>
+                <div class="version-table-container" id="versionTableContainer">
+                    ${generateVersionTable(window.cardPrintings, card.id)}
+                </div>
+                <div class="version-note">Click any version to view details and update prices</div>
             </div>
         `;
     }
@@ -400,6 +437,7 @@ function displayCardDetails(card) {
             <div class="mana-cost">Mana Cost: ${manaCost}</div>
             <p><strong>Type:</strong> ${typeLine}</p>
             <p><strong>Set:</strong> ${card.set_name} (${card.set.toUpperCase()})</p>
+            <p><strong>Rarity:</strong> <span style="text-transform: capitalize;">${card.rarity}</span></p>
             ${versionSelector}
             <div class="card-text">
                 <strong>Card Text:</strong><br>
@@ -407,7 +445,8 @@ function displayCardDetails(card) {
             </div>
             ${card.power && card.toughness ? `<p><strong>Power/Toughness:</strong> ${card.power}/${card.toughness}</p>` : ''}
             <div class="price-info">
-                TCGPlayer Price: ${priceDisplay}
+                <strong>TCGPlayer Prices:</strong>
+                ${priceDisplay}
             </div>
             <div class="add-card-section">
                 <label>Quantity:</label>
@@ -427,6 +466,112 @@ async function switchCardVersion(printingId) {
         displayCardDetails(card);
     } catch (error) {
         console.error('Error switching card version:', error);
+    }
+}
+
+// Generate version table HTML
+function generateVersionTable(printings, selectedId) {
+    const versionRows = printings.map(printing => {
+        const isSelected = printing.id === selectedId;
+        const normalPrice = printing.prices?.usd ? `$${printing.prices.usd}` : 'N/A';
+        const foilPrice = printing.prices?.usd_foil ? `$${printing.prices.usd_foil}` : 'N/A';
+        const etchedPrice = printing.prices?.usd_etched ? `$${printing.prices.usd_etched}` : 'N/A';
+        
+        // Determine rarity color
+        const rarityColors = {
+            common: '#1a1410',
+            uncommon: '#6b7280',
+            rare: '#b8860b',
+            mythic: '#ff6b35'
+        };
+        const rarityColor = rarityColors[printing.rarity] || '#6b5535';
+        
+        return `
+            <tr class="version-row ${isSelected ? 'selected-version' : ''}" onclick="switchCardVersion('${printing.id}')" style="cursor: pointer;">
+                <td style="border-left: 3px solid ${rarityColor}; padding-left: 8px;">
+                    <strong>${printing.set_name}</strong><br>
+                    <span style="font-size: 12px; color: #ff9f43;">(${printing.set.toUpperCase()}) #${printing.collector_number}</span>
+                </td>
+                <td style="text-align: center;">${printing.rarity.charAt(0).toUpperCase() + printing.rarity.slice(1)}</td>
+                <td style="text-align: right; color: #4a7c59;">${normalPrice}</td>
+                <td style="text-align: right; color: #ffd700;">${foilPrice}</td>
+                ${etchedPrice !== 'N/A' ? `<td style="text-align: right; color: #b8860b;">${etchedPrice}</td>` : '<td style="text-align: center; color: #666;">—</td>'}
+            </tr>
+        `;
+    }).join('');
+    
+    return `
+        <table class="version-table">
+            <thead>
+                <tr>
+                    <th>Set</th>
+                    <th>Rarity</th>
+                    <th>Normal</th>
+                    <th>Foil</th>
+                    <th>Etched</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${versionRows}
+            </tbody>
+        </table>
+    `;
+}
+
+// Sort card versions
+function sortCardVersions(sortBy) {
+    if (!window.currentPrintings) return;
+    
+    const sortedPrintings = [...window.currentPrintings];
+    const rarityOrder = { common: 1, uncommon: 2, rare: 3, mythic: 4 };
+    
+    sortedPrintings.sort((a, b) => {
+        switch(sortBy) {
+            case 'set-asc':
+                return a.set_name.localeCompare(b.set_name);
+            case 'set-desc':
+                return b.set_name.localeCompare(a.set_name);
+            case 'rarity-asc':
+                return (rarityOrder[a.rarity] || 0) - (rarityOrder[b.rarity] || 0);
+            case 'rarity-desc':
+                return (rarityOrder[b.rarity] || 0) - (rarityOrder[a.rarity] || 0);
+            case 'price-normal-asc': {
+                const priceA = parseFloat(a.prices?.usd || 0);
+                const priceB = parseFloat(b.prices?.usd || 0);
+                if (priceA === 0) return 1;
+                if (priceB === 0) return -1;
+                return priceA - priceB;
+            }
+            case 'price-normal-desc': {
+                const priceA = parseFloat(a.prices?.usd || 0);
+                const priceB = parseFloat(b.prices?.usd || 0);
+                if (priceA === 0) return 1;
+                if (priceB === 0) return -1;
+                return priceB - priceA;
+            }
+            case 'price-foil-asc': {
+                const priceA = parseFloat(a.prices?.usd_foil || 0);
+                const priceB = parseFloat(b.prices?.usd_foil || 0);
+                if (priceA === 0) return 1;
+                if (priceB === 0) return -1;
+                return priceA - priceB;
+            }
+            case 'price-foil-desc': {
+                const priceA = parseFloat(a.prices?.usd_foil || 0);
+                const priceB = parseFloat(b.prices?.usd_foil || 0);
+                if (priceA === 0) return 1;
+                if (priceB === 0) return -1;
+                return priceB - priceA;
+            }
+            default:
+                return 0;
+        }
+    });
+    
+    // Update the table
+    const container = document.getElementById('versionTableContainer');
+    if (container) {
+        container.innerHTML = generateVersionTable(sortedPrintings, currentCard.id);
     }
 }
 
@@ -622,6 +767,7 @@ async function viewDeckCard(cardId) {
         const response = await fetch(`https://api.scryfall.com/cards/${cardId}`);
         const card = await response.json();
         currentCard = card;
+        await fetchCardPrintings(card);
         displayCardDetails(card);
         
         // Scroll to card preview on mobile
