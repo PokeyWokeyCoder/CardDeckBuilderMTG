@@ -221,9 +221,12 @@ async function performSearch(pageUrl = null) {
         
         if (!response.ok) {
             if (response.status === 404) {
-                throw new Error('No cards found matching your search criteria.');
+                resultsContainer.innerHTML = '<div class="error-message">No cards found matching your search criteria.</div>';
+                return;
             }
-            throw new Error('Search failed. Please try again.');
+            // Get error details from Scryfall
+            const errorData = await response.json().catch(() => ({ details: 'Unknown error' }));
+            throw new Error(errorData.details || 'Search failed. Please try again.');
         }
         
         const data = await response.json();
@@ -236,9 +239,22 @@ async function performSearch(pageUrl = null) {
         displayResults(data);
         updatePagination(data);
         
+        // Store last successful query for re-rendering after adding cards
+        lastSuccessfulQuery = pageUrl || url;
+        
     } catch (error) {
         console.error('Search error:', error);
-        resultsContainer.innerHTML = `<div class="error-message">${error.message}</div>`;
+        resultsContainer.innerHTML = `
+            <div class="error-message">
+                ${error.message}
+                <br><br>
+                <small>Try adjusting your search filters or using different criteria.</small>
+            </div>
+        `;
+        // Reset pagination
+        paginationControls.style.display = 'none';
+        // Clear last successful query on error
+        lastSuccessfulQuery = null;
     }
 }
 
@@ -427,8 +443,10 @@ function addCardToDeck(cardData) {
     // Update deck count
     updateDeckCount();
     
-    // Re-render results to update buttons
-    performSearch(window.lastSearchUrl || null);
+    // Re-render results to update buttons only if we have a successful query
+    if (lastSuccessfulQuery) {
+        performSearch(lastSuccessfulQuery);
+    }
     
     // Show success message
     showNotification(`Added ${card.name} to deck!`);
@@ -465,15 +483,8 @@ function showNotification(message) {
     }, 3000);
 }
 
-// Store last search URL for re-rendering
-window.lastSearchUrl = null;
-
-// Override performSearch to store URL
-const originalPerformSearch = performSearch;
-performSearch = function(pageUrl = null) {
-    window.lastSearchUrl = pageUrl;
-    return originalPerformSearch(pageUrl);
-};
+// Store last successful search for re-rendering
+let lastSuccessfulQuery = null;
 
 // Make functions globally available
 window.addCardToDeck = addCardToDeck;
