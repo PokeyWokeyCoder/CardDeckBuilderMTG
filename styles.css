@@ -128,6 +128,28 @@ header h1 {
     border-color: #ffd700;
 }
 
+.advanced-search-link {
+    display: inline-block;
+    background: linear-gradient(135deg, #4a3626 0%, #6b4e3d 100%);
+    color: #ffd700;
+    border: 2px solid #8b6f47;
+    padding: 10px 25px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-family: 'Garamond', serif;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.advanced-search-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
+    border-color: #ffd700;
+    background: linear-gradient(135deg, #5a4636 0%, #7b5e4d 100%);
+}
+
 .main-content {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;

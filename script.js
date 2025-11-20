@@ -140,6 +140,13 @@ updateFormat();
 // Load deck from localStorage on startup
 loadDeck();
 
+// Check if we need to load a card from advanced search
+const viewCardId = localStorage.getItem('viewCardId');
+if (viewCardId) {
+    localStorage.removeItem('viewCardId');
+    loadCardById(viewCardId);
+}
+
 // Make loginAsUser available globally for onclick handlers
 window.loginAsUser = loginAsUser;
 window.loadDeckFromCloud = loadDeckFromCloud;
@@ -310,6 +317,18 @@ async function selectCard(cardId) {
     } catch (error) {
         console.error('Error fetching card details:', error);
         cardPreview.innerHTML = '<p class="error">Error loading card details.</p>';
+    }
+}
+
+// Load card by ID (for advanced search integration)
+async function loadCardById(cardId) {
+    try {
+        const response = await fetch(`https://api.scryfall.com/cards/${cardId}`);
+        const card = await response.json();
+        currentCard = card;
+        displayCardDetails(card);
+    } catch (error) {
+        console.error('Error loading card:', error);
     }
 }
 

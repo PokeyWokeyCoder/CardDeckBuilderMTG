@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Card Search - MTG Deck Builder</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="advanced-search.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Advanced Card Search</h1>
+            <div class="header-actions">
+                <a href="index.html" class="back-btn">← Back to Deck Builder</a>
+            </div>
+        </header>
+
+        <div class="search-layout">
+            <!-- Search Filters Sidebar -->
+            <aside class="filters-sidebar">
+                <h2>Search Filters</h2>
+                <p class="filter-hint">All filters are optional - leave blank to search all cards</p>
+                
+                <div class="filter-section">
+                    <label>Card Name:</label>
+                    <input type="text" id="nameFilter" class="filter-input" placeholder="e.g., Lightning Bolt">
+                </div>
+                
+                <div class="filter-section">
+                    <label>Oracle Text (Abilities):</label>
+                    <input type="text" id="oracleFilter" class="filter-input" placeholder="e.g., flying, trample">
+                    <small>Searches card text/abilities</small>
+                </div>
+                
+                <div class="filter-section">
+                    <label>Keywords:</label>
+                    <input type="text" id="keywordFilter" class="filter-input" placeholder="e.g., flying, haste">
+                    <small>Exact keyword abilities only</small>
+                </div>
+                
+                <div class="filter-section">
+                    <label>Card Type:</label>
+                    <input type="text" id="typeLineFilter" class="filter-input" placeholder="e.g., creature, instant">
+                    <small>Type line text</small>
+                </div>
+                
+                <div class="filter-section">
+                    <label>Colors:</label>
+                    <div class="color-filter-group">
+                        <label class="color-mode-label">Include:</label>
+                        <div class="color-buttons">
+                            <button class="color-btn include-color" data-color="W" title="White">⚪</button>
+                            <button class="color-btn include-color" data-color="U" title="Blue">🔵</button>
+                            <button class="color-btn include-color" data-color="B" title="Black">⚫</button>
+                            <button class="color-btn include-color" data-color="R" title="Red">🔴</button>
+                            <button class="color-btn include-color" data-color="G" title="Green">🟢</button>
+                            <button class="color-btn include-color" data-color="C" title="Colorless">◇</button>
+                        </div>
+                    </div>
+                    <div class="color-filter-group">
+                        <label class="color-mode-label">Exclude:</label>
+                        <div class="color-buttons">
+                            <button class="color-btn exclude-color" data-color="W" title="White">⚪</button>
+                            <button class="color-btn exclude-color" data-color="U" title="Blue">🔵</button>
+                            <button class="color-btn exclude-color" data-color="B" title="Black">⚫</button>
+                            <button class="color-btn exclude-color" data-color="R" title="Red">🔴</button>
+                            <button class="color-btn exclude-color" data-color="G" title="Green">🟢</button>
+                            <button class="color-btn exclude-color" data-color="C" title="Colorless">◇</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="filter-section">
+                    <label>Mana Value (CMC):</label>
+                    <div class="range-filter">
+                        <input type="number" id="minCmc" placeholder="Min" min="0" max="20">
+                        <span>to</span>
+                        <input type="number" id="maxCmc" placeholder="Max" min="0" max="20">
+                    </div>
+                </div>
+                
+                <div class="filter-section">
+                    <label>Power:</label>
+                    <div class="range-filter">
+                        <input type="text" id="minPower" placeholder="Min">
+                        <span>to</span>
+                        <input type="text" id="maxPower" placeholder="Max">
+                    </div>
+                </div>
+                
+                <div class="filter-section">
+                    <label>Toughness:</label>
+                    <div class="range-filter">
+                        <input type="text" id="minToughness" placeholder="Min">
+                        <span>to</span>
+                        <input type="text" id="maxToughness" placeholder="Max">
+                    </div>
+                </div>
+                
+                <div class="filter-section">
+                    <label>Rarity:</label>
+                    <select id="rarityFilter" class="filter-select">
+                        <option value="">Any Rarity</option>
+                        <option value="common">Common</option>
+                        <option value="uncommon">Uncommon</option>
+                        <option value="rare">Rare</option>
+                        <option value="mythic">Mythic</option>
+                    </select>
+                </div>
+                
+                <div class="filter-section">
+                    <label>Set Code:</label>
+                    <input type="text" id="setFilter" class="filter-input" placeholder="e.g., M21, ZNR">
+                </div>
+                
+                <div class="filter-section">
+                    <label>Format Legal:</label>
+                    <select id="formatFilter" class="filter-select">
+                        <option value="">Any Format</option>
+                        <option value="standard">Standard</option>
+                        <option value="modern">Modern</option>
+                        <option value="commander">Commander</option>
+                        <option value="legacy">Legacy</option>
+                        <option value="vintage">Vintage</option>
+                        <option value="pioneer">Pioneer</option>
+                        <option value="pauper">Pauper</option>
+                    </select>
+                </div>
+                
+                <div class="filter-section">
+                    <label>Artist:</label>
+                    <input type="text" id="artistFilter" class="filter-input" placeholder="Artist name">
+                </div>
+                
+                <div class="filter-section">
+                    <label>Flavor Text:</label>
+                    <input type="text" id="flavorFilter" class="filter-input" placeholder="Flavor text search">
+                </div>
+                
+                <div class="filter-actions">
+                    <button id="searchBtn" class="primary-btn">🔍 Search</button>
+                    <button id="clearBtn" class="secondary-btn">Clear All</button>
+                </div>
+            </aside>
+            
+            <!-- Results Section -->
+            <main class="results-section">
+                <div class="results-header">
+                    <h2>Search Results</h2>
+                    <div id="resultsCount" class="results-count"></div>
+                </div>
+                
+                <div id="resultsContainer" class="results-container">
+                    <div class="placeholder-message">
+                        <p>Use the filters on the left to search for cards.</p>
+                        <p>All filters are optional - you can search by any combination!</p>
+                    </div>
+                </div>
+                
+                <div id="paginationControls" class="pagination-controls" style="display: none;">
+                    <button id="prevBtn" class="page-btn" disabled>← Previous</button>
+                    <span id="pageInfo" class="page-info"></span>
+                    <button id="nextBtn" class="page-btn" disabled>Next →</button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="advanced-search.js"></script>
+</body>
+</html>
