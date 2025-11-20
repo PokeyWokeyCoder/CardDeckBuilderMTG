@@ -4,6 +4,19 @@ let excludeColors = [];
 let currentPage = 1;
 let hasNextPage = false;
 let nextPageUrl = null;
+let deck = JSON.parse(localStorage.getItem('mtgDeck')) || [];
+let currentFormat = localStorage.getItem('mtgCurrentFormat') || 'commander';
+
+// Format rules (same as main page)
+const formatRules = {
+    commander: { deckSize: 100, maxCopies: 1, allowBasicLands: true },
+    standard: { deckSize: 60, maxCopies: 4, allowBasicLands: true },
+    modern: { deckSize: 60, maxCopies: 4, allowBasicLands: true },
+    vintage: { deckSize: 60, maxCopies: 4, allowBasicLands: true },
+    legacy: { deckSize: 60, maxCopies: 4, allowBasicLands: true },
+    pioneer: { deckSize: 60, maxCopies: 4, allowBasicLands: true },
+    pauper: { deckSize: 60, maxCopies: 4, allowBasicLands: true }
+};
 
 // DOM elements
 const searchBtn = document.getElementById('searchBtn');
@@ -20,6 +33,17 @@ searchBtn.addEventListener('click', performSearch);
 clearBtn.addEventListener('click', clearAllFilters);
 prevBtn.addEventListener('click', goToPreviousPage);
 nextBtn.addEventListener('click', goToNextPage);
+
+// Update deck count on load
+updateDeckCount();
+
+function updateDeckCount() {
+    const totalCards = deck.reduce((sum, card) => sum + card.quantity, 0);
+    const deckCardCount = document.getElementById('deckCardCount');
+    if (deckCardCount) {
+        deckCardCount.textContent = `${totalCards} card${totalCards !== 1 ? 's' : ''} in deck`;
+    }
+}
 
 // Color filter buttons
 document.querySelectorAll('.include-color').forEach(btn => {
@@ -243,22 +267,50 @@ function displayResults(data) {
         const price = card.prices?.usd || card.prices?.usd_foil || 'N/A';
         const priceDisplay = price !== 'N/A' ? `$${price}` : price;
         
+        // Check if card is in deck
+        const inDeck = deck.find(c => c.name === card.name);
+        const quantity = inDeck ? inDeck.quantity : 0;
+        
+        // Serialize card data for adding to deck
+        const cardData = JSON.stringify({
+            id: card.id,
+            name: card.name,
+            type_line: card.type_line,
+            mana_cost: manaCost,
+            oracle_text: oracleText,
+            power: card.power,
+            toughness: card.toughness,
+            image_url: imageUrl,
+            price: price !== 'N/A' ? parseFloat(price) : 0,
+            rarity: card.rarity,
+            set_name: card.set_name,
+            legalities: card.legalities
+        }).replace(/"/g, '&quot;');
+        
         return `
-            <div class="card-result" onclick="viewCardDetails('${card.id}')">
-                <div class="card-result-image">
+            <div class="card-result">
+                <div class="card-result-image" onclick="viewCardDetails('${card.id}')">
                     ${imageUrl ? `<img src="${imageUrl}" alt="${card.name}" loading="lazy">` : '<div style="color: #666;">No image</div>'}
                 </div>
-                <div class="card-result-name">${card.name}</div>
-                <div class="card-result-type">${card.type_line}</div>
-                ${manaCost ? `<div class="card-result-mana">${formatManaCost(manaCost)}</div>` : ''}
-                ${oracleText ? `<div class="card-result-text">${oracleText}</div>` : ''}
-                <div class="card-result-stats">
-                    ${pt ? `<span class="card-result-pt">${pt}</span>` : '<span></span>'}
-                    <span class="card-result-rarity rarity-${card.rarity}">${card.rarity}</span>
+                <div onclick="viewCardDetails('${card.id}')">
+                    <div class="card-result-name">${card.name}</div>
+                    <div class="card-result-type">${card.type_line}</div>
+                    ${manaCost ? `<div class="card-result-mana">${formatManaCost(manaCost)}</div>` : ''}
+                    ${oracleText ? `<div class="card-result-text">${oracleText}</div>` : ''}
+                    <div class="card-result-stats">
+                        ${pt ? `<span class="card-result-pt">${pt}</span>` : '<span></span>'}
+                        <span class="card-result-rarity rarity-${card.rarity}">${card.rarity}</span>
+                    </div>
+                    <div class="card-result-stats">
+                        <span style="color: #9b8365; font-size: 0.85em;">${card.set_name}</span>
+                        <span class="card-result-price">${priceDisplay}</span>
+                    </div>
                 </div>
-                <div class="card-result-stats">
-                    <span style="color: #9b8365; font-size: 0.85em;">${card.set_name}</span>
-                    <span class="card-result-price">${priceDisplay}</span>
+                <div class="card-result-actions">
+                    ${quantity > 0 ? `<span class="in-deck-badge">${quantity}x in deck</span>` : ''}
+                    <button class="add-to-deck-btn" onclick='addCardToDeck(${cardData})' ${quantity >= formatRules[currentFormat].maxCopies && !isBasicLand(card.type_line) ? 'disabled' : ''}>
+                        + Add to Deck
+                    </button>
                 </div>
             </div>
         `;
@@ -322,3 +374,107 @@ function viewCardDetails(cardId) {
     localStorage.setItem('viewCardId', cardId);
     window.location.href = 'index.html';
 }
+
+// Check if card is a basic land
+function isBasicLand(typeLine) {
+    const basicLands = ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest', 'Wastes'];
+    return basicLands.some(land => typeLine.includes(land)) && typeLine.includes('Basic');
+}
+
+// Add card to deck
+function addCardToDeck(cardData) {
+    const card = {
+        id: cardData.id,
+        name: cardData.name,
+        typeLine: cardData.type_line,
+        manaCost: cardData.mana_cost,
+        oracleText: cardData.oracle_text,
+        power: cardData.power,
+        toughness: cardData.toughness,
+        imageUrl: cardData.image_url,
+        price: cardData.price,
+        rarity: cardData.rarity,
+        isLand: cardData.type_line.toLowerCase().includes('land'),
+        legality: cardData.legalities ? cardData.legalities[currentFormat] : 'not_legal'
+    };
+    
+    // Check if card already exists in deck
+    const existingCard = deck.find(c => c.name === card.name);
+    
+    if (existingCard) {
+        // Check if we can add more copies
+        const maxCopies = formatRules[currentFormat].maxCopies;
+        const allowBasicLands = formatRules[currentFormat].allowBasicLands;
+        const isBasic = isBasicLand(card.typeLine);
+        
+        if (!isBasic && existingCard.quantity >= maxCopies) {
+            alert(`Cannot add more than ${maxCopies} copies of ${card.name} in ${currentFormat} format.`);
+            return;
+        }
+        
+        existingCard.quantity++;
+    } else {
+        // Add new card to deck
+        deck.push({
+            ...card,
+            quantity: 1
+        });
+    }
+    
+    // Save to localStorage
+    localStorage.setItem('mtgDeck', JSON.stringify(deck));
+    
+    // Update deck count
+    updateDeckCount();
+    
+    // Re-render results to update buttons
+    performSearch(window.lastSearchUrl || null);
+    
+    // Show success message
+    showNotification(`Added ${card.name} to deck!`);
+}
+
+// Show notification
+function showNotification(message) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #4a3626 0%, #6b4e3d 100%);
+        color: #ffd700;
+        padding: 15px 25px;
+        border-radius: 8px;
+        border: 2px solid #8b6f47;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+        z-index: 10000;
+        font-family: 'Garamond', serif;
+        font-size: 16px;
+        animation: slideIn 0.3s ease;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+// Store last search URL for re-rendering
+window.lastSearchUrl = null;
+
+// Override performSearch to store URL
+const originalPerformSearch = performSearch;
+performSearch = function(pageUrl = null) {
+    window.lastSearchUrl = pageUrl;
+    return originalPerformSearch(pageUrl);
+};
+
+// Make functions globally available
+window.addCardToDeck = addCardToDeck;
+window.viewCardDetails = viewCardDetails;
