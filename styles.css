@@ -174,6 +174,51 @@ h3 {
 }
 
 /* Search Section */
+.format-selector {
+    margin-bottom: 15px;
+    padding: 15px;
+    background: rgba(139, 111, 71, 0.2);
+    border-radius: 5px;
+    border: 2px solid #8b6f47;
+}
+
+.format-selector label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #ffd700;
+    font-size: 16px;
+}
+
+.format-dropdown {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #6b5535;
+    border-radius: 5px;
+    font-size: 16px;
+    background: #1a1410;
+    color: #ffd700;
+    font-family: 'Garamond', 'Georgia', serif;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.format-dropdown:focus {
+    outline: none;
+    border-color: #d4a574;
+}
+
+.format-info {
+    margin-top: 10px;
+    padding: 10px;
+    background: rgba(26, 20, 16, 0.6);
+    border-radius: 5px;
+    border: 2px solid #6b5535;
+    color: #f4e8d0;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
 .search-box {
     display: flex;
     gap: 10px;
@@ -255,6 +300,148 @@ h3 {
     margin-top: 5px;
     color: #9b8365;
     font-style: italic;
+}
+
+.advanced-filters {
+    margin-bottom: 15px;
+}
+
+.toggle-filters-btn {
+    width: 100%;
+    padding: 10px;
+    background: linear-gradient(135deg, #8b6f47, #6b5535);
+    color: #f4e8d0;
+    border: 2px solid #d4a574;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.3s;
+    font-family: 'Garamond', 'Georgia', serif;
+}
+
+.toggle-filters-btn:hover {
+    background: linear-gradient(135deg, #9c7f57, #7c6545);
+}
+
+.filters-panel {
+    margin-top: 10px;
+    padding: 15px;
+    background: rgba(26, 20, 16, 0.8);
+    border-radius: 5px;
+    border: 2px solid #6b5535;
+}
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filter-group label {
+    color: #d4a574;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.filter-select {
+    padding: 8px;
+    border: 2px solid #6b5535;
+    border-radius: 5px;
+    background: #1a1410;
+    color: #f4e8d0;
+    font-family: 'Garamond', 'Georgia', serif;
+}
+
+.mana-filter, .pt-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mana-filter input, .pt-filter input {
+    flex: 1;
+    padding: 8px;
+    border: 2px solid #6b5535;
+    border-radius: 5px;
+    background: #1a1410;
+    color: #f4e8d0;
+    font-family: 'Garamond', 'Georgia', serif;
+}
+
+.mana-filter span, .pt-filter span {
+    color: #9b8365;
+}
+
+.color-filter {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.color-btn {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #6b5535;
+    border-radius: 50%;
+    background: #1a1410;
+    cursor: pointer;
+    font-size: 20px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.color-btn:hover {
+    transform: scale(1.1);
+    border-color: #d4a574;
+}
+
+.color-btn.active {
+    border-color: #ffd700;
+    border-width: 3px;
+    background: rgba(139, 111, 71, 0.3);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.apply-filters-btn, .clear-filters-btn {
+    padding: 10px 20px;
+    border: 2px solid;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.3s;
+    font-family: 'Garamond', 'Georgia', serif;
+    margin-right: 10px;
+}
+
+.apply-filters-btn {
+    background: linear-gradient(135deg, #4a7c59, #2f5a3f);
+    color: #f4e8d0;
+    border-color: #5a8c6a;
+}
+
+.apply-filters-btn:hover {
+    background: linear-gradient(135deg, #5a8c6a, #3f6a4f);
+}
+
+.clear-filters-btn {
+    background: linear-gradient(135deg, #8b4a4a, #6b3535);
+    color: #f4e8d0;
+    border-color: #a85a5a;
+}
+
+.clear-filters-btn:hover {
+    background: linear-gradient(135deg, #9b5a5a, #7b4545);
 }
 
 .import-section {
@@ -769,5 +956,9 @@ h3 {
     
     .username-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .filter-grid {
+        grid-template-columns: 1fr;
     }
 }

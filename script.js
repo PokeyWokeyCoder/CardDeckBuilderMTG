@@ -3,11 +3,72 @@ let deck = [];
 let currentCard = null;
 let currentUser = null;
 let currentDeckId = null;
+let currentFormat = 'commander';
+let selectedColors = [];
+
+// Format rules
+const formatRules = {
+    commander: {
+        name: 'Commander (EDH)',
+        deckSize: 100,
+        maxCopies: 1,
+        allowBasicLands: true,
+        description: '100 cards singleton format. 1 Commander + 99 cards. Unlimited basic lands.'
+    },
+    standard: {
+        name: 'Standard',
+        deckSize: 60,
+        maxCopies: 4,
+        allowBasicLands: true,
+        description: '60 card minimum. Max 4 copies per card (except basic lands).'
+    },
+    modern: {
+        name: 'Modern',
+        deckSize: 60,
+        maxCopies: 4,
+        allowBasicLands: true,
+        description: '60 card minimum. Max 4 copies per card (except basic lands).'
+    },
+    vintage: {
+        name: 'Vintage',
+        deckSize: 60,
+        maxCopies: 4,
+        allowBasicLands: true,
+        description: '60 card minimum. Max 4 copies per card (except basic lands). Some cards restricted to 1.'
+    },
+    legacy: {
+        name: 'Legacy',
+        deckSize: 60,
+        maxCopies: 4,
+        allowBasicLands: true,
+        description: '60 card minimum. Max 4 copies per card (except basic lands).'
+    },
+    pioneer: {
+        name: 'Pioneer',
+        deckSize: 60,
+        maxCopies: 4,
+        allowBasicLands: true,
+        description: '60 card minimum. Max 4 copies per card (except basic lands).'
+    },
+    pauper: {
+        name: 'Pauper',
+        deckSize: 60,
+        maxCopies: 4,
+        allowBasicLands: true,
+        description: '60 card minimum. Max 4 copies per card (except basic lands). Commons only.'
+    }
+};
 
 // DOM Elements
 const cardSearch = document.getElementById('cardSearch');
 const searchBtn = document.getElementById('searchBtn');
 const setFilter = document.getElementById('setFilter');
+const formatSelect = document.getElementById('formatSelect');
+const formatInfo = document.getElementById('formatInfo');
+const toggleFiltersBtn = document.getElementById('toggleFilters');
+const filtersPanel = document.getElementById('filtersPanel');
+const applyFiltersBtn = document.getElementById('applyFilters');
+const clearFiltersBtn = document.getElementById('clearFilters');
 const searchResults = document.getElementById('searchResults');
 const cardPreview = document.getElementById('cardPreview');
 const deckList = document.getElementById('deckList');
@@ -31,14 +92,34 @@ searchBtn.addEventListener('click', searchCard);
 cardSearch.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') searchCard();
 });
+formatSelect.addEventListener('change', updateFormat);
+toggleFiltersBtn.addEventListener('click', toggleFilters);
+applyFiltersBtn.addEventListener('click', searchCard);
+clearFiltersBtn.addEventListener('click', clearAdvancedFilters);
 clearDeck.addEventListener('click', clearDeckList);
 exportDeck.addEventListener('click', exportDeckToFile);
 importBtn.addEventListener('click', importDeckFromFile);
 logoutBtn.addEventListener('click', logout);
 saveDeckBtn.addEventListener('click', saveDeckToCloud);
 
+// Initialize color filter buttons
+document.querySelectorAll('.color-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        btn.classList.toggle('active');
+        const color = btn.getAttribute('data-color');
+        if (selectedColors.includes(color)) {
+            selectedColors = selectedColors.filter(c => c !== color);
+        } else {
+            selectedColors.push(color);
+        }
+    });
+});
+
 // Check if user is logged in
 checkLoginStatus();
+
+// Initialize format
+updateFormat();
 
 // Load deck from localStorage on startup
 loadDeck();
@@ -48,28 +129,108 @@ window.loginAsUser = loginAsUser;
 window.loadDeckFromCloud = loadDeckFromCloud;
 window.deleteDeckFromCloud = deleteDeckFromCloud;
 
+// ============================================
+// FORMAT AND FILTER FUNCTIONS
+// ============================================
+
+// Update format and display rules
+function updateFormat() {
+    currentFormat = formatSelect.value;
+    const rules = formatRules[currentFormat];
+    
+    formatInfo.innerHTML = `
+        <strong>${rules.name}</strong><br>
+        ${rules.description}<br>
+        <span style="color: #4a7c59;">Deck Size: ${rules.deckSize} cards | Max Copies: ${rules.maxCopies === 1 ? '1 (Singleton)' : rules.maxCopies}</span>
+    `;
+}
+
+// Toggle advanced filters panel
+function toggleFilters() {
+    if (filtersPanel.style.display === 'none') {
+        filtersPanel.style.display = 'block';
+        toggleFiltersBtn.textContent = '⚙️ Hide Filters';
+    } else {
+        filtersPanel.style.display = 'none';
+        toggleFiltersBtn.textContent = '⚙️ Advanced Filters';
+    }
+}
+
+// Clear advanced filters
+function clearAdvancedFilters() {
+    document.getElementById('minCmc').value = '';
+    document.getElementById('maxCmc').value = '';
+    document.getElementById('typeFilter').value = '';
+    document.getElementById('rarityFilter').value = '';
+    document.getElementById('powerFilter').value = '';
+    document.getElementById('toughnessFilter').value = '';
+    selectedColors = [];
+    document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
+}
+
+// Build search query with filters
+function buildSearchQuery() {
+    let query = cardSearch.value.trim();
+    if (!query) return null;
+    
+    const filters = [];
+    
+    // Set filter
+    const setCode = setFilter.value.trim();
+    if (setCode) {
+        filters.push(`set:${setCode}`);
+    }
+    
+    // Format legality
+    filters.push(`legal:${currentFormat}`);
+    
+    // CMC filter
+    const minCmc = document.getElementById('minCmc').value;
+    const maxCmc = document.getElementById('maxCmc').value;
+    if (minCmc) filters.push(`cmc>=${minCmc}`);
+    if (maxCmc) filters.push(`cmc<=${maxCmc}`);
+    
+    // Color filter
+    if (selectedColors.length > 0) {
+        const colorQuery = selectedColors.map(c => `c:${c}`).join(' ');
+        filters.push(`(${colorQuery})`);
+    }
+    
+    // Type filter
+    const type = document.getElementById('typeFilter').value;
+    if (type) filters.push(`t:${type}`);
+    
+    // Rarity filter
+    const rarity = document.getElementById('rarityFilter').value;
+    if (rarity) filters.push(`r:${rarity}`);
+    
+    // Power/Toughness filter
+    const power = document.getElementById('powerFilter').value;
+    const toughness = document.getElementById('toughnessFilter').value;
+    if (power) filters.push(`pow=${power}`);
+    if (toughness) filters.push(`tou=${toughness}`);
+    
+    // Combine query with filters
+    if (filters.length > 0) {
+        query = `${query} ${filters.join(' ')}`;
+    }
+    
+    return query;
+}
+
 // Search for cards using Scryfall API
 async function searchCard() {
-    const query = cardSearch.value.trim();
+    const query = buildSearchQuery();
     if (!query) return;
 
     searchResults.innerHTML = '<p class="loading">Searching...</p>';
 
     try {
-        // Build search query with optional set filter
-        let searchQuery = query;
-        const setCode = setFilter.value.trim();
-        
-        if (setCode) {
-            // Add set filter to search query
-            searchQuery = `${query} set:${setCode}`;
-        }
-
-        const response = await fetch(`https://api.scryfall.com/cards/search?q=${encodeURIComponent(searchQuery)}`);
+        const response = await fetch(`https://api.scryfall.com/cards/search?q=${encodeURIComponent(query)}`);
         const data = await response.json();
 
         if (data.object === 'error') {
-            searchResults.innerHTML = '<p class="error">No cards found. Try a different search or check the set code.</p>';
+            searchResults.innerHTML = '<p class="error">No cards found. Try different filters or search terms.</p>';
             return;
         }
 
@@ -87,12 +248,25 @@ function displaySearchResults(cards) {
         return;
     }
 
-    searchResults.innerHTML = cards.slice(0, 20).map(card => `
-        <div class="search-result-item" onclick="selectCard('${card.id}')">
-            <span>${card.name}</span>
-            <span style="color: #999; font-size: 14px;">${card.set_name} (${card.set.toUpperCase()})</span>
-        </div>
-    `).join('');
+    searchResults.innerHTML = cards.slice(0, 20).map(card => {
+        const legality = card.legalities[currentFormat];
+        const legalityBadge = legality === 'legal' ? 
+            '<span style="color: #4a7c59;">✓ Legal</span>' : 
+            legality === 'banned' ?
+            '<span style="color: #d97c6a;">✗ Banned</span>' :
+            legality === 'restricted' ?
+            '<span style="color: #ff9f43;">⚠ Restricted</span>' :
+            '<span style="color: #9b8365;">Not Legal</span>';
+        
+        return `
+            <div class="search-result-item" onclick="selectCard('${card.id}')">
+                <div>
+                    <span>${card.name}</span>
+                    <div style="font-size: 12px; color: #9b8365;">${card.set_name} (${card.set.toUpperCase()}) ${legalityBadge}</div>
+                </div>
+            </div>
+        `;
+    }).join('');
 }
 
 // Select a card to display details
@@ -149,11 +323,27 @@ function addCardToDeck() {
 
     const quantityInput = document.getElementById('quantityInput');
     const quantity = parseInt(quantityInput.value) || 1;
+    
+    const rules = formatRules[currentFormat];
+    const maxCopies = isBasicLand(currentCard) && rules.allowBasicLands ? 999 : rules.maxCopies;
 
-    // Validate quantity (max 4 per card)
-    if (quantity < 1 || quantity > 4) {
-        alert('Quantity must be between 1 and 4');
+    // Validate quantity
+    if (quantity < 1 || quantity > maxCopies) {
+        alert(`Quantity must be between 1 and ${maxCopies}`);
         return;
+    }
+    
+    // Check format legality
+    const legality = currentCard.legalities[currentFormat];
+    if (legality === 'banned') {
+        alert(`${currentCard.name} is BANNED in ${formatRules[currentFormat].name}!`);
+        return;
+    }
+    
+    if (legality === 'not_legal') {
+        if (!confirm(`${currentCard.name} is NOT LEGAL in ${formatRules[currentFormat].name}. Add anyway?`)) {
+            return;
+        }
     }
 
     // Check if card already exists in deck
@@ -161,8 +351,8 @@ function addCardToDeck() {
     
     if (existingCard) {
         const newQuantity = existingCard.quantity + quantity;
-        if (newQuantity > 4) {
-            alert(`Cannot add more. Maximum 4 copies per card. Currently have ${existingCard.quantity}.`);
+        if (newQuantity > maxCopies) {
+            alert(`Cannot add more. Maximum ${maxCopies} copies per card. Currently have ${existingCard.quantity}.`);
             return;
         }
         existingCard.quantity = newQuantity;
@@ -175,13 +365,20 @@ function addCardToDeck() {
             price: price,
             imageUrl: currentCard.image_uris?.small || currentCard.card_faces?.[0]?.image_uris?.small || '',
             setCode: currentCard.set.toUpperCase(),
-            setName: currentCard.set_name
+            setName: currentCard.set_name,
+            legality: legality
         });
     }
 
     saveDeck();
     updateDeckDisplay();
     quantityInput.value = 1;
+}
+
+// Check if card is a basic land
+function isBasicLand(card) {
+    const basicLands = ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest', 'Wastes'];
+    return basicLands.includes(card.name) && card.type_line.includes('Basic');
 }
 
 // Update deck display
@@ -196,22 +393,29 @@ function updateDeckDisplay() {
     // Sort deck by card name
     deck.sort((a, b) => a.name.localeCompare(b.name));
 
-    deckList.innerHTML = deck.map(card => `
-        <div class="deck-item">
-            <div class="deck-item-info" onclick="viewDeckCard('${card.id}')">
-                <div class="deck-item-name">${card.name} ${card.setCode ? `(${card.setCode})` : ''}</div>
-                <div class="deck-item-price">$${card.price.toFixed(2)} each | $${(card.price * card.quantity).toFixed(2)} total</div>
-            </div>
-            <div class="deck-item-controls">
-                <div class="quantity-controls">
-                    <button class="quantity-btn" onclick="event.stopPropagation(); decreaseQuantity('${card.id}')">-</button>
-                    <span class="quantity-display">${card.quantity}</span>
-                    <button class="quantity-btn" onclick="event.stopPropagation(); increaseQuantity('${card.id}')">+</button>
+    deckList.innerHTML = deck.map(card => {
+        const legalityWarning = card.legality === 'banned' ? 
+            ' <span style="color: #d97c6a; font-size: 12px;">⚠ BANNED</span>' :
+            card.legality === 'restricted' ?
+            ' <span style="color: #ff9f43; font-size: 12px;">⚠ RESTRICTED</span>' : '';
+        
+        return `
+            <div class="deck-item">
+                <div class="deck-item-info" onclick="viewDeckCard('${card.id}')">
+                    <div class="deck-item-name">${card.name} ${card.setCode ? `(${card.setCode})` : ''}${legalityWarning}</div>
+                    <div class="deck-item-price">$${card.price.toFixed(2)} each | $${(card.price * card.quantity).toFixed(2)} total</div>
                 </div>
-                <button class="remove-btn" onclick="event.stopPropagation(); removeCard('${card.id}')">Remove</button>
+                <div class="deck-item-controls">
+                    <div class="quantity-controls">
+                        <button class="quantity-btn" onclick="event.stopPropagation(); decreaseQuantity('${card.id}')">-</button>
+                        <span class="quantity-display">${card.quantity}</span>
+                        <button class="quantity-btn" onclick="event.stopPropagation(); increaseQuantity('${card.id}')">+</button>
+                    </div>
+                    <button class="remove-btn" onclick="event.stopPropagation(); removeCard('${card.id}')">Remove</button>
+                </div>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 
     updateDeckStats();
 }
@@ -219,12 +423,18 @@ function updateDeckDisplay() {
 // Increase card quantity
 function increaseQuantity(cardId) {
     const card = deck.find(c => c.id === cardId);
-    if (card && card.quantity < 4) {
+    if (!card) return;
+    
+    // Get max copies based on format rules
+    const rules = formatRules[currentFormat];
+    const maxCopies = card.name.match(/^(Plains|Island|Swamp|Mountain|Forest|Wastes)$/) && rules.allowBasicLands ? 999 : rules.maxCopies;
+    
+    if (card.quantity < maxCopies) {
         card.quantity++;
         saveDeck();
         updateDeckDisplay();
     } else {
-        alert('Maximum 4 copies per card!');
+        alert(`Maximum ${maxCopies} copies per card in ${rules.name}!`);
     }
 }
 
