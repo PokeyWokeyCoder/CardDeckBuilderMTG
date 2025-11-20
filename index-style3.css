@@ -1,0 +1,195 @@
+/* STYLE 3: RETRO NEWSPAPER - Vintage newspaper/magazine style with classic typography */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: #f5f1e8;
+    background-image: 
+        repeating-linear-gradient(0deg, transparent, transparent 24px, rgba(0,0,0,.02) 24px, rgba(0,0,0,.02) 25px);
+    min-height: 100vh;
+    padding: 40px 20px;
+    color: #2c2416;
+}
+
+.container {
+    max-width: 1000px;
+    width: 100%;
+    margin: 0 auto;
+    background: #fefdfb;
+    padding: 50px 60px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.15);
+    border: 1px solid #d4c5a9;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 30px;
+    border-bottom: 4px double #2c2416;
+    border-top: 4px double #2c2416;
+    padding-top: 30px;
+}
+
+header h1 {
+    font-size: 4em;
+    margin-bottom: 5px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    color: #2c2416;
+    font-family: 'Playfair Display', 'Georgia', serif;
+    text-transform: uppercase;
+    line-height: 1.1;
+}
+
+.subtitle {
+    font-size: 1.1em;
+    color: #6b5d4f;
+    font-style: italic;
+    margin-top: 15px;
+    font-weight: 400;
+    border-top: 1px solid #2c2416;
+    border-bottom: 1px solid #2c2416;
+    padding: 10px 0;
+    display: inline-block;
+}
+
+.game-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 35px;
+    margin-bottom: 40px;
+}
+
+.game-card {
+    background: #fefdfb;
+    border: 3px solid #2c2416;
+    border-radius: 0;
+    padding: 35px 40px;
+    text-decoration: none;
+    color: #2c2416;
+    transition: all 0.3s ease;
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 30px;
+    align-items: start;
+    text-align: left;
+    box-shadow: 5px 5px 0 rgba(44, 36, 22, 0.2);
+    position: relative;
+}
+
+.game-card::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: -10px;
+    bottom: -10px;
+    border: 1px solid #d4c5a9;
+    z-index: -1;
+}
+
+.game-card:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 8px 8px 0 rgba(44, 36, 22, 0.3);
+    background: #f9f7f3;
+}
+
+.game-icon {
+    font-size: 5em;
+    text-align: center;
+    line-height: 1;
+    border: 2px solid #2c2416;
+    padding: 15px;
+    background: #f5f1e8;
+}
+
+.game-card-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.game-card h2 {
+    font-size: 2.2em;
+    color: #2c2416;
+    margin-bottom: 12px;
+    font-weight: 900;
+    font-family: 'Playfair Display', 'Georgia', serif;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.game-card p {
+    font-size: 1.05em;
+    line-height: 1.8;
+    color: #4a3f31;
+    margin-bottom: 20px;
+    flex-grow: 1;
+    text-align: justify;
+    font-weight: 400;
+}
+
+.game-status {
+    display: inline-block;
+    padding: 8px 20px;
+    background: #2c2416;
+    border: 2px solid #2c2416;
+    border-radius: 0;
+    font-size: 0.75em;
+    font-weight: 700;
+    color: #fefdfb;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-family: 'Georgia', serif;
+}
+
+.game-card.mtg h2 { color: #8b4513; }
+.game-card.tarkov h2 { color: #2f5233; }
+.game-card.deadlock h2 { color: #8b2e3c; }
+
+footer {
+    text-align: center;
+    padding: 25px 20px;
+    border-top: 4px double #2c2416;
+    border-bottom: 4px double #2c2416;
+    color: #6b5d4f;
+    font-size: 0.95em;
+    font-style: italic;
+    margin-top: 20px;
+}
+
+footer p {
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 30px 25px;
+    }
+    
+    header h1 {
+        font-size: 2.5em;
+    }
+    
+    .game-card {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 25px;
+    }
+    
+    .game-icon {
+        font-size: 3.5em;
+        padding: 10px;
+    }
+}
+
+/* Newspaper article style for game cards */
+.game-card h2::first-letter {
+    font-size: 1.5em;
+    font-weight: 900;
+}

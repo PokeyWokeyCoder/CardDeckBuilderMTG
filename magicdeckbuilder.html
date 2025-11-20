@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTG Deck Builder</title>
+    <link rel="stylesheet" href="magicdeckbuilder.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Magic: The Gathering Deck Builder</h1>
+            <div class="header-actions">
+                <a href="index.html" class="back-btn">🏠 Home</a>
+                <a href="advanced-search.html" class="advanced-search-link">🔍 Advanced Card Search</a>
+                <a href="deck-finder.html" class="deck-finder-link">❓ I DON'T KNOW WHAT I'M DOING!</a>
+            </div>
+            <div id="authSection" class="auth-section">
+                <div id="userInfo" class="user-info" style="display: none;">
+                    <span id="userName"></span>
+                    <button id="logoutBtn" class="auth-btn">Logout</button>
+                </div>
+                <div id="loginPrompt" class="login-prompt">
+                    <h3 style="color: white; margin-bottom: 15px;">Select Your Name:</h3>
+                    <div class="username-grid">
+                        <button class="username-btn" onclick="loginAsUser('Poke')">Poke</button>
+                        <button class="username-btn" onclick="loginAsUser('Krum')">Krum</button>
+                        <button class="username-btn" onclick="loginAsUser('Chickn')">Chickn</button>
+                        <button class="username-btn" onclick="loginAsUser('Mojo')">Mojo</button>
+                        <button class="username-btn" onclick="loginAsUser('Beck')">Beck</button>
+                        <button class="username-btn" onclick="loginAsUser('JS')">JS</button>
+                        <button class="username-btn" onclick="loginAsUser('Ders')">Ders</button>
+                        <button class="username-btn" onclick="loginAsUser('Haru')">Haru</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Combined Search and Card Display Section -->
+            <section class="search-section">
+                <h2>Card Search</h2>
+                
+                <div class="search-box">
+                    <input type="text" id="cardSearch" placeholder="Enter card name..." autocomplete="off">
+                    <button id="searchBtn">Search</button>
+                    <button id="toggleSearchResults" class="toggle-results-btn" style="display: none;" onclick="toggleSearchResults()">
+                        <span id="toggleSearchIcon">▼</span> Hide Results
+                    </button>
+                </div>
+                
+                <div id="searchResults" class="search-results"></div>
+                
+                <div style="margin-top: 20px; border-top: 2px solid #6b5535; padding-top: 20px;">
+                    <h3 style="color: #ffd700; margin-bottom: 15px;">Selected Card</h3>
+                    <div id="cardPreview" class="card-preview">
+                        <p class="placeholder">Search for a card to display details</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Deck List Section -->
+            <section class="deck-section">
+                <div class="deck-header">
+                    <h2>Your Deck</h2>
+                    
+                    <!-- Format Selector -->
+                    <div class="format-selector" style="margin: 15px 0;">
+                        <label for="formatSelect">Deck Format:</label>
+                        <select id="formatSelect" class="format-dropdown">
+                            <option value="commander">Commander (EDH)</option>
+                            <option value="standard">Standard</option>
+                            <option value="modern">Modern</option>
+                            <option value="vintage">Vintage</option>
+                            <option value="legacy">Legacy</option>
+                            <option value="pioneer">Pioneer</option>
+                            <option value="pauper">Pauper</option>
+                        </select>
+                        <div id="formatInfo" class="format-info"></div>
+                    </div>
+                    
+                    <div class="deck-name-section">
+                        <input type="text" id="deckName" placeholder="My Deck" maxlength="50">
+                        <button id="saveDeckBtn" class="save-deck-btn" disabled>Save to Cloud</button>
+                    </div>
+                </div>
+                <div class="deck-stats">
+                    <p>Total Cards: <span id="totalCards">0</span></p>
+                    <p>Lands: <span id="totalLands">0</span></p>
+                    <p>Non-Lands: <span id="totalNonLands">0</span></p>
+                    <p class="price-total">Total Price: $<span id="totalPrice">0.00</span></p>
+                </div>
+                <div class="deck-sort-controls">
+                    <label for="deckSortSelect">Sort by:</label>
+                    <select id="deckSortSelect" class="sort-dropdown">
+                        <option value="default">Order Added</option>
+                        <option value="name-asc">Card Name (A-Z)</option>
+                        <option value="name-desc">Card Name (Z-A)</option>
+                        <option value="cmc-asc">Mana Cost (Low to High)</option>
+                        <option value="cmc-desc">Mana Cost (High to Low)</option>
+                        <option value="type-asc">Card Type (A-Z)</option>
+                        <option value="type-desc">Card Type (Z-A)</option>
+                        <option value="quantity-desc">Quantity (High to Low)</option>
+                        <option value="quantity-asc">Quantity (Low to High)</option>
+                        <option value="price-desc">Price (High to Low)</option>
+                        <option value="price-asc">Price (Low to High)</option>
+                    </select>
+                </div>
+                <div id="deckList" class="deck-list">
+                    <p class="placeholder">Your deck is empty. Add cards to get started!</p>
+                </div>
+                <div class="deck-actions">
+                    <div class="import-section" style="margin-bottom: 10px;">
+                        <label for="deckImport" class="import-label" style="display: block; margin-bottom: 5px;">Import Deck:</label>
+                        <input type="file" id="deckImport" accept=".txt" class="file-input" style="display: inline-block; width: auto; margin-right: 10px;">
+                        <button id="importBtn" class="import-btn">Import</button>
+                    </div>
+                    <button id="exportDeck" class="export-btn">Export Deck</button>
+                    <button id="clearDeck" class="clear-btn">Clear Deck</button>
+                </div>
+                <div id="myDecksSection" class="my-decks-section" style="display: none;">
+                    <h3>My Saved Decks</h3>
+                    <div id="myDecksList" class="saved-decks-list"></div>
+                </div>
+            </section>
+        </div>
+            
+        <!-- Browse Community Decks Section - Full Width at Bottom -->
+        <section class="browse-section" style="max-width: 1400px; margin: 0 auto 20px;">
+            <h2>Community Decks</h2>
+            <div class="browse-filters">
+                <select id="browseFormatFilter" class="filter-select">
+                    <option value="">All Formats</option>
+                    <option value="commander">Commander</option>
+                    <option value="standard">Standard</option>
+                    <option value="modern">Modern</option>
+                    <option value="vintage">Vintage</option>
+                    <option value="legacy">Legacy</option>
+                    <option value="pioneer">Pioneer</option>
+                    <option value="pauper">Pauper</option>
+                </select>
+                <input type="text" id="browseUserFilter" placeholder="Filter by user..." class="filter-input">
+                <select id="communitySortSelect" class="sort-dropdown">
+                    <option value="time-desc">Newest First</option>
+                    <option value="time-asc">Oldest First</option>
+                    <option value="cards-desc">Most Cards</option>
+                    <option value="cards-asc">Fewest Cards</option>
+                    <option value="comments">Most Comments</option>
+                    <option value="name">Deck Name</option>
+                </select>
+                <button id="refreshBrowseBtn" class="browse-btn">🔄 Refresh</button>
+            </div>
+            <div id="communityDecksList" class="community-decks-grid"></div>
+        </section>
+    </div>
+    
+    <!-- Deck Viewer Modal -->
+    <div id="deckViewerModal" class="modal" style="display: none;">
+        <div class="modal-content deck-viewer-modal">
+            <span class="close-modal">&times;</span>
+            <div class="modal-header">
+                <h2 id="viewedDeckName"></h2>
+                <div class="modal-deck-meta">
+                    <span id="viewedDeckOwner"></span>
+                    <span id="viewedDeckFormat"></span>
+                    <span id="viewedDeckStats"></span>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="deck-viewer-grid">
+                    <div class="deck-viewer-list">
+                        <h3>Deck List</h3>
+                        <div id="viewedDeckList" class="viewed-deck-cards"></div>
+                    </div>
+                    <div class="deck-viewer-sidebar">
+                        <!-- Comments Section -->
+                        <div class="comments-section">
+                            <h3>Comments</h3>
+                            <div id="commentsList" class="comments-list"></div>
+                            <div class="add-comment">
+                                <textarea id="commentInput" placeholder="Add a comment..." rows="3"></textarea>
+                                <button id="postCommentBtn" class="post-comment-btn">Post Comment</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Proposed Changes Section -->
+                        <div class="proposed-changes-section">
+                            <h3>Proposed Changes</h3>
+                            <div id="proposedChangesList" class="proposed-changes-list"></div>
+                            <div class="add-proposed-change">
+                                <label>Suggest a change:</label>
+                                <select id="changeAction" class="change-action-select">
+                                    <option value="add">Add Card</option>
+                                    <option value="remove">Remove Card</option>
+                                </select>
+                                <input type="text" id="changeCardName" placeholder="Card name..." class="change-input">
+                                <input type="number" id="changeQuantity" placeholder="Qty" min="1" max="4" value="1" class="change-qty-input">
+                                <textarea id="changeReason" placeholder="Reason for change..." rows="2"></textarea>
+                                <button id="proposeChangeBtn" class="propose-change-btn">Propose Change</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, query, where, serverTimestamp, orderBy, addDoc, updateDoc, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA62zcmY0-STuW6whKbtUCC7t-CoOnL0FY",
+            authDomain: "card-deck-maker.firebaseapp.com",
+            projectId: "card-deck-maker",
+            storageBucket: "card-deck-maker.firebasestorage.app",
+            messagingSenderId: "824587692378",
+            appId: "1:824587692378:web:7bb7bceabaa047f361eb63"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Make Firebase available globally
+        window.firebaseAuth = auth;
+        window.firebaseDb = db;
+        window.firebaseModules = {
+            GoogleAuthProvider,
+            signInWithPopup,
+            signOut,
+            onAuthStateChanged,
+            collection,
+            doc,
+            setDoc,
+            getDoc,
+            getDocs,
+            deleteDoc,
+            query,
+            where,
+            serverTimestamp,
+            orderBy,
+            addDoc,
+            updateDoc,
+            arrayUnion
+        };
+    </script>
+
+    <script src="magicdeckbuilder.js"></script>
+</body>
+</html>

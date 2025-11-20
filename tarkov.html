@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escape From Tarkov - Database</title>
+    <link rel="stylesheet" href="tarkov.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Escape From Tarkov Database</h1>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">🏠 Home</a>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Tab Navigation -->
+            <div class="tab-container">
+                <button class="tab-btn active" onclick="showTab('maps')">🗺️ Maps</button>
+                <button class="tab-btn" onclick="showTab('loot')">💎 Loot Spots</button>
+                <button class="tab-btn" onclick="showTab('quests')">📋 Quests</button>
+                <button class="tab-btn" onclick="showTab('items')">📦 Items</button>
+            </div>
+
+            <!-- Maps Tab -->
+            <div id="maps" class="tab-content active">
+                <h2>Interactive Maps</h2>
+                <div class="maps-grid">
+                    <div class="map-card">
+                        <h3>Customs</h3>
+                        <div class="map-placeholder">🗺️</div>
+                        <p>The most popular map for beginners and quest progression</p>
+                        <div class="map-stats">
+                            <span>Size: Medium</span>
+                            <span>Difficulty: ★★☆☆☆</span>
+                        </div>
+                    </div>
+                    <div class="map-card">
+                        <h3>Woods</h3>
+                        <div class="map-placeholder">🌲</div>
+                        <p>Large outdoor map with long-range combat and sniper positions</p>
+                        <div class="map-stats">
+                            <span>Size: Large</span>
+                            <span>Difficulty: ★★★☆☆</span>
+                        </div>
+                    </div>
+                    <div class="map-card">
+                        <h3>Shoreline</h3>
+                        <div class="map-placeholder">🏖️</div>
+                        <p>Coastal map featuring the Resort with high-tier loot</p>
+                        <div class="map-stats">
+                            <span>Size: Large</span>
+                            <span>Difficulty: ★★★★☆</span>
+                        </div>
+                    </div>
+                    <div class="map-card">
+                        <h3>Interchange</h3>
+                        <div class="map-placeholder">🏬</div>
+                        <p>Indoor shopping mall with tech stores and Killa boss</p>
+                        <div class="map-stats">
+                            <span>Size: Large</span>
+                            <span>Difficulty: ★★★★☆</span>
+                        </div>
+                    </div>
+                    <div class="map-card">
+                        <h3>Reserve</h3>
+                        <div class="map-placeholder">🏗️</div>
+                        <p>Military base with underground bunker system</p>
+                        <div class="map-stats">
+                            <span>Size: Medium</span>
+                            <span>Difficulty: ★★★★★</span>
+                        </div>
+                    </div>
+                    <div class="map-card">
+                        <h3>Labs</h3>
+                        <div class="map-placeholder">🔬</div>
+                        <p>Underground facility with raiders and best loot (Requires keycard)</p>
+                        <div class="map-stats">
+                            <span>Size: Medium</span>
+                            <span>Difficulty: ★★★★★</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loot Spots Tab -->
+            <div id="loot" class="tab-content">
+                <h2>High-Value Loot Locations</h2>
+                <div class="loot-section">
+                    <div class="loot-category">
+                        <h3>📱 Tech Loot</h3>
+                        <ul class="loot-list">
+                            <li><strong>Interchange:</strong> Techlight, Rasmussen, German</li>
+                            <li><strong>Customs:</strong> Crackhouse, Stronghold</li>
+                            <li><strong>Shoreline:</strong> Resort East Wing 226, 328</li>
+                        </ul>
+                    </div>
+                    <div class="loot-category">
+                        <h3>💊 Medical Loot</h3>
+                        <ul class="loot-list">
+                            <li><strong>Shoreline:</strong> Resort Wings, Sanitar spawns</li>
+                            <li><strong>Customs:</strong> Medical tent, Fortress</li>
+                            <li><strong>Interchange:</strong> EMERCOM, Mantis, OLI offices</li>
+                        </ul>
+                    </div>
+                    <div class="loot-category">
+                        <h3>🔑 Key Rooms</h3>
+                        <ul class="loot-list">
+                            <li><strong>Customs:</strong> Marked room, Dorms 314, Safe room</li>
+                            <li><strong>Shoreline:</strong> Resort 301, 306, 226, 222</li>
+                            <li><strong>Reserve:</strong> Marked rooms, RB-ST, RB-PSV1</li>
+                        </ul>
+                    </div>
+                    <div class="loot-category">
+                        <h3>💰 Safes & Caches</h3>
+                        <ul class="loot-list">
+                            <li><strong>Customs:</strong> 6 safe locations in dorms and offices</li>
+                            <li><strong>Woods:</strong> Hidden stashes throughout the map</li>
+                            <li><strong>Shoreline:</strong> Village houses, Resort safes</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quests Tab -->
+            <div id="quests" class="tab-content">
+                <h2>Quest Tracker</h2>
+                <div class="quest-filters">
+                    <button class="filter-btn active" onclick="filterQuests('all')">All</button>
+                    <button class="filter-btn" onclick="filterQuests('prapor')">Prapor</button>
+                    <button class="filter-btn" onclick="filterQuests('therapist')">Therapist</button>
+                    <button class="filter-btn" onclick="filterQuests('skier')">Skier</button>
+                    <button class="filter-btn" onclick="filterQuests('peacekeeper')">Peacekeeper</button>
+                    <button class="filter-btn" onclick="filterQuests('mechanic')">Mechanic</button>
+                </div>
+                <div class="quest-list">
+                    <div class="quest-item" data-trader="prapor">
+                        <div class="quest-header">
+                            <h4>Debut</h4>
+                            <span class="quest-trader prapor">Prapor</span>
+                        </div>
+                        <p class="quest-desc">Kill 5 Scavs on Customs</p>
+                        <div class="quest-reward">Reward: +4800 EXP, +0.03 Rep, AKS-74U</div>
+                    </div>
+                    <div class="quest-item" data-trader="therapist">
+                        <div class="quest-header">
+                            <h4>Sanitary Standards Pt. 1</h4>
+                            <span class="quest-trader therapist">Therapist</span>
+                        </div>
+                        <p class="quest-desc">Find 2 Tushonka, 2 Humpback Salmon</p>
+                        <div class="quest-reward">Reward: +4900 EXP, +0.02 Rep, Grizzly</div>
+                    </div>
+                    <div class="quest-item" data-trader="skier">
+                        <div class="quest-header">
+                            <h4>Supplier</h4>
+                            <span class="quest-trader skier">Skier</span>
+                        </div>
+                        <p class="quest-desc">Find the military machinery key, deliver it</p>
+                        <div class="quest-reward">Reward: +5100 EXP, +0.03 Rep, $8000</div>
+                    </div>
+                    <p class="coming-soon">🚧 Full quest database coming soon...</p>
+                </div>
+            </div>
+
+            <!-- Items Tab -->
+            <div id="items" class="tab-content">
+                <h2>Item Database</h2>
+                <div class="item-categories">
+                    <div class="item-category">
+                        <h3>🔧 Hideout Items</h3>
+                        <div class="item-grid">
+                            <div class="item-card">
+                                <div class="item-icon">🔩</div>
+                                <h4>Bolts</h4>
+                                <p class="item-use">Multiple hideout upgrades</p>
+                            </div>
+                            <div class="item-card">
+                                <div class="item-icon">🔌</div>
+                                <h4>Wires</h4>
+                                <p class="item-use">Generator, Intelligence Center</p>
+                            </div>
+                            <div class="item-card">
+                                <div class="item-icon">💡</div>
+                                <h4>Light Bulbs</h4>
+                                <p class="item-use">Illumination upgrade</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item-category">
+                        <h3>💰 High Value Items</h3>
+                        <div class="item-grid">
+                            <div class="item-card valuable">
+                                <div class="item-icon">💎</div>
+                                <h4>GPU</h4>
+                                <p class="item-use">~800k₽ | Bitcoin Farm</p>
+                            </div>
+                            <div class="item-card valuable">
+                                <div class="item-icon">💻</div>
+                                <h4>Tetriz</h4>
+                                <p class="item-use">~500k₽ | Barter item</p>
+                            </div>
+                            <div class="item-card valuable">
+                                <div class="item-icon">🔋</div>
+                                <h4>LEDX</h4>
+                                <p class="item-use">~1M₽ | Medical barter</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item-category">
+                        <h3>📋 Quest Items</h3>
+                        <div class="item-grid">
+                            <div class="item-card quest">
+                                <div class="item-icon">💼</div>
+                                <h4>Docs Case</h4>
+                                <p class="item-use">Therapist - Private Clinic</p>
+                            </div>
+                            <div class="item-card quest">
+                                <div class="item-icon">🔑</div>
+                                <h4>Factory Key</h4>
+                                <p class="item-use">Skier - Bad Rep Evidence</p>
+                            </div>
+                            <div class="item-card quest">
+                                <div class="item-icon">💊</div>
+                                <h4>Morphine</h4>
+                                <p class="item-use">Multiple quests</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="coming-soon">🚧 Full item database with prices coming soon...</p>
+            </div>
+        </div>
+
+        <footer>
+            <p>Escape From Tarkov Database | Data updates regularly | Made by Pokey</p>
+        </footer>
+    </div>
+
+    <script src="tarkov.js"></script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+/* STYLE 1: MODERN MINIMALIST - Clean, flat design with sans-serif fonts */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 40px 20px;
+    color: #2d3748;
+}
+
+.container {
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 60px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 50px 30px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+header h1 {
+    font-size: 3.5em;
+    margin-bottom: 15px;
+    font-weight: 800;
+    letter-spacing: -2px;
+    color: #1a202c;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.subtitle {
+    font-size: 1.2em;
+    color: #718096;
+    font-weight: 400;
+    margin-top: 10px;
+}
+
+.game-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.game-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 40px 30px;
+    text-decoration: none;
+    color: #2d3748;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border: 2px solid transparent;
+}
+
+.game-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    border-color: #667eea;
+}
+
+.game-icon {
+    font-size: 3.5em;
+    margin-bottom: 20px;
+    opacity: 0.9;
+}
+
+.game-card h2 {
+    font-size: 1.8em;
+    color: #1a202c;
+    margin-bottom: 15px;
+    font-weight: 700;
+    letter-spacing: -1px;
+}
+
+.game-card p {
+    font-size: 1em;
+    line-height: 1.7;
+    color: #718096;
+    margin-bottom: 25px;
+    flex-grow: 1;
+    font-weight: 400;
+}
+
+.game-status {
+    display: inline-block;
+    padding: 8px 16px;
+    background: #f7fafc;
+    border: none;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 600;
+    color: #4a5568;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.game-card.mtg:hover {
+    border-color: #f6ad55;
+}
+
+.game-card.tarkov:hover {
+    border-color: #48bb78;
+}
+
+.game-card.deadlock:hover {
+    border-color: #fc8181;
+}
+
+footer {
+    text-align: center;
+    padding: 30px 20px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    color: #718096;
+    font-size: 0.95em;
+    backdrop-filter: blur(10px);
+}
+
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2.5em;
+    }
+    
+    .game-grid {
+        grid-template-columns: 1fr;
+    }
+}
