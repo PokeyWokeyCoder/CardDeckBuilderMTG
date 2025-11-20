@@ -319,10 +319,34 @@ async function selectCard(cardId) {
         const response = await fetch(`https://api.scryfall.com/cards/${cardId}`);
         const card = await response.json();
         currentCard = card;
+        
+        // Fetch all printings for this card
+        await fetchCardPrintings(card);
+        
         displayCardDetails(card);
     } catch (error) {
         console.error('Error fetching card details:', error);
         cardPreview.innerHTML = '<p class="error">Error loading card details.</p>';
+    }
+}
+
+// Fetch all printings/versions of a card
+async function fetchCardPrintings(card) {
+    try {
+        // Get the prints_search_uri from the card
+        const printsUri = card.prints_search_uri;
+        if (!printsUri) return;
+        
+        const response = await fetch(printsUri);
+        const data = await response.json();
+        
+        // Store all printings globally so we can switch between them
+        window.cardPrintings = data.data || [];
+        
+        console.log(`Found ${window.cardPrintings.length} printings for ${card.name}`);
+    } catch (error) {
+        console.error('Error fetching card printings:', error);
+        window.cardPrintings = [];
     }
 }
 
@@ -349,6 +373,25 @@ function displayCardDetails(card) {
     // Get TCGPlayer price
     const price = card.prices?.usd || card.prices?.usd_foil || '0.00';
     const priceDisplay = price !== null ? `$${price}` : 'Price not available';
+    
+    // Build version selector if we have multiple printings
+    let versionSelector = '';
+    if (window.cardPrintings && window.cardPrintings.length > 1) {
+        versionSelector = `
+            <div class="version-selector">
+                <label for="versionSelect"><strong>Select Version/Printing:</strong></label>
+                <select id="versionSelect" onchange="switchCardVersion(this.value)">
+                    ${window.cardPrintings.map(printing => {
+                        const printPrice = printing.prices?.usd || printing.prices?.usd_foil || 'N/A';
+                        const priceText = printPrice !== 'N/A' ? ` - $${printPrice}` : ' - Price N/A';
+                        const selected = printing.id === card.id ? ' selected' : '';
+                        return `<option value="${printing.id}"${selected}>${printing.set_name} (${printing.set.toUpperCase()})${priceText}</option>`;
+                    }).join('')}
+                </select>
+                <div class="version-count">${window.cardPrintings.length} versions available</div>
+            </div>
+        `;
+    }
 
     cardPreview.innerHTML = `
         ${imageUrl ? `<img src="${imageUrl}" alt="${card.name}">` : ''}
@@ -356,6 +399,8 @@ function displayCardDetails(card) {
             <h3>${card.name}</h3>
             <div class="mana-cost">Mana Cost: ${manaCost}</div>
             <p><strong>Type:</strong> ${typeLine}</p>
+            <p><strong>Set:</strong> ${card.set_name} (${card.set.toUpperCase()})</p>
+            ${versionSelector}
             <div class="card-text">
                 <strong>Card Text:</strong><br>
                 ${oracleText.replace(/\n/g, '<br>')}
@@ -371,6 +416,18 @@ function displayCardDetails(card) {
             </div>
         </div>
     `;
+}
+
+// Switch to a different version/printing of the card
+async function switchCardVersion(printingId) {
+    try {
+        const response = await fetch(`https://api.scryfall.com/cards/${printingId}`);
+        const card = await response.json();
+        currentCard = card;
+        displayCardDetails(card);
+    } catch (error) {
+        console.error('Error switching card version:', error);
+    }
 }
 
 // Add card to deck
@@ -422,6 +479,7 @@ function addCardToDeck() {
             imageUrl: currentCard.image_uris?.small || currentCard.card_faces?.[0]?.image_uris?.small || '',
             setCode: currentCard.set.toUpperCase(),
             setName: currentCard.set_name,
+            collectorNumber: currentCard.collector_number,
             legality: legality,
             typeLine: currentCard.type_line,
             isLand: currentCard.type_line.toLowerCase().includes('land')

@@ -36,7 +36,15 @@ searchBtn.addEventListener('click', performSearch);
 clearBtn.addEventListener('click', clearAllFilters);
 prevBtn.addEventListener('click', goToPreviousPage);
 nextBtn.addEventListener('click', goToNextPage);
-searchSortSelect.addEventListener('change', applySortToResults);
+searchSortSelect.addEventListener('change', () => {
+    const sortBy = searchSortSelect?.value || 'default';
+    // For sorts that benefit from API ordering, re-run the search
+    if (sortBy === 'price-desc' || sortBy === 'price-asc' || sortBy === 'cmc-asc' || sortBy === 'cmc-desc' || sortBy === 'rarity-asc' || sortBy === 'rarity-desc' || sortBy === 'default') {
+        performSearch(); // Re-fetch with proper API ordering
+    } else {
+        applySortToResults(); // Client-side sort for name and type
+    }
+});
 
 // Update deck count on load
 updateDeckCount();
@@ -220,8 +228,22 @@ async function performSearch(pageUrl = null) {
             // Use the provided pagination URL
             url = pageUrl;
         } else {
-            // Build new search URL
-            url = `https://api.scryfall.com/cards/search?q=${encodeURIComponent(query)}&order=name`;
+            // Build new search URL with appropriate order parameter
+            const sortBy = searchSortSelect?.value || 'default';
+            let orderParam = 'name'; // Default to name ordering
+            
+            // Use Scryfall's native ordering for certain sorts
+            if (sortBy === 'price-desc') {
+                orderParam = 'usd'; // Order by USD price descending
+            } else if (sortBy === 'price-asc') {
+                orderParam = 'usd'; // Order by USD price (we'll reverse client-side)
+            } else if (sortBy === 'cmc-asc' || sortBy === 'cmc-desc') {
+                orderParam = 'cmc';
+            } else if (sortBy === 'rarity-asc' || sortBy === 'rarity-desc') {
+                orderParam = 'rarity';
+            }
+            
+            url = `https://api.scryfall.com/cards/search?q=${encodeURIComponent(query)}&order=${orderParam}`;
             currentPage = 1;
         }
         
@@ -295,20 +317,25 @@ function applySortToResults() {
                 case 'name-desc':
                     return b.name.localeCompare(a.name);
                 case 'cmc-asc':
+                    // API handles this, but keep for client-side fallback
                     return (a.cmc || 0) - (b.cmc || 0);
                 case 'cmc-desc':
+                    // API handles this, but keep for client-side fallback
                     return (b.cmc || 0) - (a.cmc || 0);
                 case 'type-asc':
                     return (a.type_line || '').localeCompare(b.type_line || '');
                 case 'type-desc':
                     return (b.type_line || '').localeCompare(a.type_line || '');
                 case 'rarity-asc':
+                    // API handles this, but keep for client-side fallback
                     const rarityOrder = { common: 1, uncommon: 2, rare: 3, mythic: 4 };
                     return (rarityOrder[a.rarity] || 0) - (rarityOrder[b.rarity] || 0);
                 case 'rarity-desc':
+                    // API handles this, but keep for client-side fallback
                     const rarityOrder2 = { common: 1, uncommon: 2, rare: 3, mythic: 4 };
                     return (rarityOrder2[b.rarity] || 0) - (rarityOrder2[a.rarity] || 0);
                 case 'price-asc':
+                    // Scryfall returns descending by default, so reverse it
                     const priceA1 = parseFloat(a.prices?.usd || a.prices?.usd_foil || 0);
                     const priceB1 = parseFloat(b.prices?.usd || b.prices?.usd_foil || 0);
                     // Push N/A prices (0) to the end when sorting ascending
@@ -316,6 +343,7 @@ function applySortToResults() {
                     if (priceB1 === 0) return -1;
                     return priceA1 - priceB1;
                 case 'price-desc':
+                    // API already returns descending, just filter out 0s
                     const priceA2 = parseFloat(a.prices?.usd || a.prices?.usd_foil || 0);
                     const priceB2 = parseFloat(b.prices?.usd || b.prices?.usd_foil || 0);
                     // Push N/A prices (0) to the end when sorting descending
