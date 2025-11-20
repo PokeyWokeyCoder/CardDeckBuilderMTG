@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTG Deck Builder</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Magic: The Gathering Deck Builder</h1>
+            <div id="authSection" class="auth-section">
+                <div id="userInfo" class="user-info" style="display: none;">
+                    <span id="userName"></span>
+                    <button id="logoutBtn" class="auth-btn">Logout</button>
+                </div>
+                <div id="loginPrompt" class="login-prompt">
+                    <h3 style="color: white; margin-bottom: 15px;">Select Your Name:</h3>
+                    <div class="username-grid">
+                        <button class="username-btn" onclick="loginAsUser('Poke')">Poke</button>
+                        <button class="username-btn" onclick="loginAsUser('Krum')">Krum</button>
+                        <button class="username-btn" onclick="loginAsUser('Chickn')">Chickn</button>
+                        <button class="username-btn" onclick="loginAsUser('Mojo')">Mojo</button>
+                        <button class="username-btn" onclick="loginAsUser('Beck')">Beck</button>
+                        <button class="username-btn" onclick="loginAsUser('JS')">JS</button>
+                        <button class="username-btn" onclick="loginAsUser('Ders')">Ders</button>
+                        <button class="username-btn" onclick="loginAsUser('Haru')">Haru</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Card Search Section -->
+            <section class="search-section">
+                <h2>Search Cards</h2>
+                <div class="search-box">
+                    <input type="text" id="cardSearch" placeholder="Enter card name..." autocomplete="off">
+                    <button id="searchBtn">Search</button>
+                </div>
+                <div class="set-filter">
+                    <label for="setFilter">Filter by Set (optional):</label>
+                    <input type="text" id="setFilter" placeholder="e.g., M21, ZNR, STX..." autocomplete="off">
+                    <small>Leave blank to search all sets</small>
+                </div>
+                <div class="import-section">
+                    <label for="deckImport" class="import-label">Import Deck from File:</label>
+                    <input type="file" id="deckImport" accept=".txt" class="file-input">
+                    <button id="importBtn" class="import-btn">Import Deck</button>
+                </div>
+                <div id="searchResults" class="search-results"></div>
+            </section>
+
+            <!-- Card Display Section -->
+            <section class="card-display">
+                <h2>Selected Card</h2>
+                <div id="cardPreview" class="card-preview">
+                    <p class="placeholder">Search for a card to display details</p>
+                </div>
+            </section>
+
+            <!-- Deck List Section -->
+            <section class="deck-section">
+                <div class="deck-header">
+                    <h2>Your Deck</h2>
+                    <div class="deck-name-section">
+                        <input type="text" id="deckName" placeholder="My Deck" maxlength="50">
+                        <button id="saveDeckBtn" class="save-deck-btn" disabled>Save to Cloud</button>
+                    </div>
+                </div>
+                <div class="deck-stats">
+                    <p>Total Cards: <span id="totalCards">0</span></p>
+                    <p class="price-total">Total Price: $<span id="totalPrice">0.00</span></p>
+                </div>
+                <div id="deckList" class="deck-list">
+                    <p class="placeholder">Your deck is empty. Add cards to get started!</p>
+                </div>
+                <div class="deck-actions">
+                    <button id="exportDeck" class="export-btn">Export Deck</button>
+                    <button id="clearDeck" class="clear-btn">Clear Deck</button>
+                </div>
+                <div id="myDecksSection" class="my-decks-section" style="display: none;">
+                    <h3>My Saved Decks</h3>
+                    <div id="myDecksList" class="saved-decks-list"></div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA62zcmY0-STuW6whKbtUCC7t-CoOnL0FY",
+            authDomain: "card-deck-maker.firebaseapp.com",
+            projectId: "card-deck-maker",
+            storageBucket: "card-deck-maker.firebasestorage.app",
+            messagingSenderId: "824587692378",
+            appId: "1:824587692378:web:7bb7bceabaa047f361eb63"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Make Firebase available globally
+        window.firebaseAuth = auth;
+        window.firebaseDb = db;
+        window.firebaseModules = {
+            GoogleAuthProvider,
+            signInWithPopup,
+            signOut,
+            onAuthStateChanged,
+            collection,
+            doc,
+            setDoc,
+            getDoc,
+            getDocs,
+            deleteDoc,
+            query,
+            where,
+            serverTimestamp
+        };
+    </script>
+
+    <script src="script.js"></script>
+</body>
+</html>

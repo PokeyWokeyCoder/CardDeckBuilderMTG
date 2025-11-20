@@ -1,0 +1,15 @@
+{
+  "name": "mtg-deck-builder",
+  "version": "1.0.0",
+  "description": "Magic the Gathering Deck Builder with Firebase",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve -s . -l 3000"
+  },
+  "keywords": ["mtg", "deck-builder", "magic-the-gathering"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "serve": "^14.2.1"
+  }
+}
