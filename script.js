@@ -4,7 +4,8 @@ let currentCard = null;
 let currentUser = null;
 let currentDeckId = null;
 let currentFormat = 'commander';
-let selectedColors = [];
+let includeColors = [];
+let excludeColors = [];
 
 // Format rules
 const formatRules = {
@@ -104,15 +105,28 @@ importBtn.addEventListener('click', importDeckFromFile);
 logoutBtn.addEventListener('click', logout);
 saveDeckBtn.addEventListener('click', saveDeckToCloud);
 
-// Initialize color filter buttons
-document.querySelectorAll('.color-btn').forEach(btn => {
+// Initialize color filter buttons for include colors
+document.querySelectorAll('.include-color').forEach(btn => {
     btn.addEventListener('click', () => {
         btn.classList.toggle('active');
         const color = btn.getAttribute('data-color');
-        if (selectedColors.includes(color)) {
-            selectedColors = selectedColors.filter(c => c !== color);
+        if (includeColors.includes(color)) {
+            includeColors = includeColors.filter(c => c !== color);
         } else {
-            selectedColors.push(color);
+            includeColors.push(color);
+        }
+    });
+});
+
+// Initialize color filter buttons for exclude colors
+document.querySelectorAll('.exclude-color').forEach(btn => {
+    btn.addEventListener('click', () => {
+        btn.classList.toggle('active');
+        const color = btn.getAttribute('data-color');
+        if (excludeColors.includes(color)) {
+            excludeColors = excludeColors.filter(c => c !== color);
+        } else {
+            excludeColors.push(color);
         }
     });
 });
@@ -167,9 +181,9 @@ function clearAdvancedFilters() {
     document.getElementById('powerFilter').value = '';
     document.getElementById('toughnessFilter').value = '';
     document.getElementById('cardTextFilter').value = '';
-    selectedColors = [];
+    includeColors = [];
+    excludeColors = [];
     document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelector('input[name="colorMode"][value="include"]').checked = true;
 }
 
 // Build search query with filters
@@ -194,24 +208,17 @@ function buildSearchQuery() {
     if (minCmc) filters.push(`cmc>=${minCmc}`);
     if (maxCmc) filters.push(`cmc<=${maxCmc}`);
     
-    // Color filter with mode (include/exclude/exact)
-    if (selectedColors.length > 0) {
-        const colorMode = document.querySelector('input[name="colorMode"]:checked').value;
-        
-        if (colorMode === 'include') {
-            // Include: must contain at least one of these colors
-            const colorQuery = selectedColors.map(c => `c:${c}`).join(' OR ');
-            filters.push(`(${colorQuery})`);
-        } else if (colorMode === 'exclude') {
-            // Exclude: must NOT contain any of these colors
-            selectedColors.forEach(c => {
-                filters.push(`-c:${c}`);
-            });
-        } else if (colorMode === 'exact') {
-            // Exact: must be exactly these colors
-            const colorString = selectedColors.join('');
-            filters.push(`c=${colorString}`);
-        }
+    // Include colors filter
+    if (includeColors.length > 0) {
+        const colorQuery = includeColors.map(c => `c:${c}`).join(' OR ');
+        filters.push(`(${colorQuery})`);
+    }
+    
+    // Exclude colors filter
+    if (excludeColors.length > 0) {
+        excludeColors.forEach(c => {
+            filters.push(`-c:${c}`);
+        });
     }
     
     // Card text/abilities filter
@@ -845,10 +852,13 @@ async function saveDeckToCloud() {
         const deckData = {
             name: deckName,
             cards: deck,
+            owner: currentUser.displayName,
             userId: currentUser.uid,
             userEmail: currentUser.email,
+            format: currentFormat,
             totalCards: deck.reduce((sum, card) => sum + card.quantity, 0),
             totalPrice: deck.reduce((sum, card) => sum + (card.price * card.quantity), 0),
+            timestamp: serverTimestamp(),
             updatedAt: serverTimestamp(),
             createdAt: currentDeckId.startsWith('deck_') ? serverTimestamp() : undefined
         };
@@ -1024,16 +1034,15 @@ async function loadCommunityDecks() {
         const formatFilter = document.getElementById('browseFormatFilter').value;
         const userFilter = document.getElementById('browseUserFilter').value.toLowerCase();
         
-        let q = query(collection(window.firebaseDb, 'decks'), orderBy('timestamp', 'desc'));
-        
-        const querySnapshot = await getDocs(q);
+        // Simple query without orderBy to avoid index requirement
+        const querySnapshot = await getDocs(collection(window.firebaseDb, 'decks'));
         const decks = [];
         
         querySnapshot.forEach((doc) => {
             const data = doc.data();
             // Apply filters
             const matchesFormat = !formatFilter || data.format === formatFilter;
-            const matchesUser = !userFilter || data.owner.toLowerCase().includes(userFilter);
+            const matchesUser = !userFilter || (data.owner && data.owner.toLowerCase().includes(userFilter));
             
             if (matchesFormat && matchesUser) {
                 decks.push({
@@ -1041,6 +1050,13 @@ async function loadCommunityDecks() {
                     ...data
                 });
             }
+        });
+        
+        // Sort by timestamp client-side
+        decks.sort((a, b) => {
+            const timeA = a.timestamp ? a.timestamp.seconds : 0;
+            const timeB = b.timestamp ? b.timestamp.seconds : 0;
+            return timeB - timeA;
         });
         
         if (decks.length === 0) {
@@ -1135,14 +1151,13 @@ function closeViewerModal() {
 
 // ===== COMMENTS SYSTEM =====
 async function loadComments(deckId) {
-    const { collection, query, where, getDocs, orderBy } = window.firebaseModules;
+    const { collection, query, where, getDocs } = window.firebaseModules;
     const commentsList = document.getElementById('commentsList');
     
     try {
         const q = query(
             collection(window.firebaseDb, 'comments'),
-            where('deckId', '==', deckId),
-            orderBy('timestamp', 'desc')
+            where('deckId', '==', deckId)
         );
         
         const querySnapshot = await getDocs(q);
@@ -1152,8 +1167,18 @@ async function loadComments(deckId) {
             return;
         }
         
-        commentsList.innerHTML = querySnapshot.docs.map(doc => {
-            const comment = doc.data();
+        // Sort comments by timestamp client-side
+        const comments = [];
+        querySnapshot.forEach(doc => {
+            comments.push({ id: doc.id, ...doc.data() });
+        });
+        comments.sort((a, b) => {
+            const timeA = a.timestamp ? a.timestamp.seconds : 0;
+            const timeB = b.timestamp ? b.timestamp.seconds : 0;
+            return timeB - timeA;
+        });
+        
+        commentsList.innerHTML = comments.map(comment => {
             const date = comment.timestamp ? new Date(comment.timestamp.seconds * 1000).toLocaleString() : 'Just now';
             
             return `
@@ -1192,7 +1217,7 @@ async function postComment() {
     try {
         await addDoc(collection(window.firebaseDb, 'comments'), {
             deckId: currentViewedDeckId,
-            author: currentUser,
+            author: currentUser.displayName,
             text: commentText,
             timestamp: serverTimestamp()
         });
@@ -1208,14 +1233,13 @@ async function postComment() {
 
 // ===== PROPOSED CHANGES SYSTEM =====
 async function loadProposedChanges(deckId) {
-    const { collection, query, where, getDocs, orderBy } = window.firebaseModules;
+    const { collection, query, where, getDocs } = window.firebaseModules;
     const proposedChangesList = document.getElementById('proposedChangesList');
     
     try {
         const q = query(
             collection(window.firebaseDb, 'proposedChanges'),
-            where('deckId', '==', deckId),
-            orderBy('timestamp', 'desc')
+            where('deckId', '==', deckId)
         );
         
         const querySnapshot = await getDocs(q);
@@ -1225,10 +1249,20 @@ async function loadProposedChanges(deckId) {
             return;
         }
         
-        const isOwner = currentUser === currentViewedDeck.owner;
+        // Sort by timestamp client-side
+        const changes = [];
+        querySnapshot.forEach(doc => {
+            changes.push({ id: doc.id, ...doc.data() });
+        });
+        changes.sort((a, b) => {
+            const timeA = a.timestamp ? a.timestamp.seconds : 0;
+            const timeB = b.timestamp ? b.timestamp.seconds : 0;
+            return timeB - timeA;
+        });
         
-        proposedChangesList.innerHTML = querySnapshot.docs.map(doc => {
-            const change = doc.data();
+        const isOwner = currentUser && currentUser.displayName === currentViewedDeck.owner;
+        
+        proposedChangesList.innerHTML = changes.map(change => {
             const date = change.timestamp ? new Date(change.timestamp.seconds * 1000).toLocaleString() : 'Just now';
             const actionClass = change.action === 'add' ? 'add' : 'remove';
             
@@ -1245,8 +1279,8 @@ async function loadProposedChanges(deckId) {
                     ${change.reason ? `<div class="change-reason">Reason: ${change.reason}</div>` : ''}
                     ${isOwner && change.status === 'pending' ? `
                         <div class="owner-actions">
-                            <button class="owner-action-btn accept" onclick="respondToChange('${doc.id}', 'accepted')">✓ Accept</button>
-                            <button class="owner-action-btn reject" onclick="respondToChange('${doc.id}', 'rejected')">✗ Reject</button>
+                            <button class="owner-action-btn accept" onclick="respondToChange('${change.id}', 'accepted')">✓ Accept</button>
+                            <button class="owner-action-btn reject" onclick="respondToChange('${change.id}', 'rejected')">✗ Reject</button>
                         </div>
                     ` : ''}
                     ${change.status !== 'pending' ? `<div style="color: ${change.status === 'accepted' ? '#90ee90' : '#ff6b6b'}; font-size: 0.85em; margin-top: 5px;">${change.status === 'accepted' ? '✓ Accepted' : '✗ Rejected'}</div>` : ''}
@@ -1266,7 +1300,7 @@ async function proposeChange() {
         return;
     }
     
-    if (currentUser === currentViewedDeck.owner) {
+    if (currentUser.displayName === currentViewedDeck.owner) {
         alert('You cannot propose changes to your own deck. Edit it directly!');
         return;
     }
@@ -1286,7 +1320,7 @@ async function proposeChange() {
     try {
         await addDoc(collection(window.firebaseDb, 'proposedChanges'), {
             deckId: currentViewedDeckId,
-            author: currentUser,
+            author: currentUser.displayName,
             action: action,
             cardName: cardName,
             quantity: quantity,

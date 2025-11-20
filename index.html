@@ -76,19 +76,28 @@
                             </div>
                             
                             <div class="filter-group">
-                                <label>Colors:</label>
-                                <div class="color-mode-selector">
-                                    <label><input type="radio" name="colorMode" value="include" checked> Include</label>
-                                    <label><input type="radio" name="colorMode" value="exclude"> Exclude</label>
-                                    <label><input type="radio" name="colorMode" value="exact"> Exact</label>
+                                <label>Include Colors:</label>
+                                <small style="color: #9b8365; font-size: 11px;">Cards must have at least one of these</small>
+                                <div class="color-filter" id="includeColorFilter">
+                                    <button class="color-btn include-color" data-color="W" title="White">⚪</button>
+                                    <button class="color-btn include-color" data-color="U" title="Blue">🔵</button>
+                                    <button class="color-btn include-color" data-color="B" title="Black">⚫</button>
+                                    <button class="color-btn include-color" data-color="R" title="Red">🔴</button>
+                                    <button class="color-btn include-color" data-color="G" title="Green">🟢</button>
+                                    <button class="color-btn include-color" data-color="C" title="Colorless">◇</button>
                                 </div>
-                                <div class="color-filter">
-                                    <button class="color-btn" data-color="W" title="White">⚪</button>
-                                    <button class="color-btn" data-color="U" title="Blue">🔵</button>
-                                    <button class="color-btn" data-color="B" title="Black">⚫</button>
-                                    <button class="color-btn" data-color="R" title="Red">🔴</button>
-                                    <button class="color-btn" data-color="G" title="Green">🟢</button>
-                                    <button class="color-btn" data-color="C" title="Colorless">◇</button>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <label>Exclude Colors:</label>
+                                <small style="color: #9b8365; font-size: 11px;">Cards must NOT have any of these</small>
+                                <div class="color-filter" id="excludeColorFilter">
+                                    <button class="color-btn exclude-color" data-color="W" title="White">⚪</button>
+                                    <button class="color-btn exclude-color" data-color="U" title="Blue">🔵</button>
+                                    <button class="color-btn exclude-color" data-color="B" title="Black">⚫</button>
+                                    <button class="color-btn exclude-color" data-color="R" title="Red">🔴</button>
+                                    <button class="color-btn exclude-color" data-color="G" title="Green">🟢</button>
+                                    <button class="color-btn exclude-color" data-color="C" title="Colorless">◇</button>
                                 </div>
                             </div>
                             
