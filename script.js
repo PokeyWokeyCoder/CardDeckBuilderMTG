@@ -471,8 +471,14 @@ function updateDeckDisplay() {
             case 'quantity-desc':
                 return b.quantity - a.quantity;
             case 'price-asc':
+                // Push N/A prices to the end when sorting ascending
+                if (!a.price || a.price === 0) return 1;
+                if (!b.price || b.price === 0) return -1;
                 return a.price - b.price;
             case 'price-desc':
+                // Push N/A prices to the end when sorting descending
+                if (!a.price || a.price === 0) return 1;
+                if (!b.price || b.price === 0) return -1;
                 return b.price - a.price;
             default:
                 return a.name.localeCompare(b.name);
