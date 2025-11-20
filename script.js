@@ -449,41 +449,43 @@ function updateDeckDisplay() {
     }
 
     // Get selected sort option
-    const sortBy = document.getElementById('deckSortSelect')?.value || 'name-asc';
+    const sortBy = document.getElementById('deckSortSelect')?.value || 'default';
     
-    // Sort deck based on selected option
-    deck.sort((a, b) => {
-        switch(sortBy) {
-            case 'name-asc':
-                return a.name.localeCompare(b.name);
-            case 'name-desc':
-                return b.name.localeCompare(a.name);
-            case 'cmc-asc':
-                return (a.cmc || 0) - (b.cmc || 0);
-            case 'cmc-desc':
-                return (b.cmc || 0) - (a.cmc || 0);
-            case 'type-asc':
-                return (a.type_line || '').localeCompare(b.type_line || '');
-            case 'type-desc':
-                return (b.type_line || '').localeCompare(a.type_line || '');
-            case 'quantity-asc':
-                return a.quantity - b.quantity;
-            case 'quantity-desc':
-                return b.quantity - a.quantity;
-            case 'price-asc':
-                // Push N/A prices to the end when sorting ascending
-                if (!a.price || a.price === 0) return 1;
-                if (!b.price || b.price === 0) return -1;
-                return a.price - b.price;
-            case 'price-desc':
-                // Push N/A prices to the end when sorting descending
-                if (!a.price || a.price === 0) return 1;
-                if (!b.price || b.price === 0) return -1;
-                return b.price - a.price;
-            default:
-                return a.name.localeCompare(b.name);
-        }
-    });
+    // Sort deck based on selected option (only if not default)
+    if (sortBy !== 'default') {
+        deck.sort((a, b) => {
+            switch(sortBy) {
+                case 'name-asc':
+                    return a.name.localeCompare(b.name);
+                case 'name-desc':
+                    return b.name.localeCompare(a.name);
+                case 'cmc-asc':
+                    return (a.cmc || 0) - (b.cmc || 0);
+                case 'cmc-desc':
+                    return (b.cmc || 0) - (a.cmc || 0);
+                case 'type-asc':
+                    return (a.type_line || '').localeCompare(b.type_line || '');
+                case 'type-desc':
+                    return (b.type_line || '').localeCompare(a.type_line || '');
+                case 'quantity-asc':
+                    return a.quantity - b.quantity;
+                case 'quantity-desc':
+                    return b.quantity - a.quantity;
+                case 'price-asc':
+                    // Push N/A prices to the end when sorting ascending
+                    if (!a.price || a.price === 0) return 1;
+                    if (!b.price || b.price === 0) return -1;
+                    return a.price - b.price;
+                case 'price-desc':
+                    // Push N/A prices to the end when sorting descending
+                    if (!a.price || a.price === 0) return 1;
+                    if (!b.price || b.price === 0) return -1;
+                    return b.price - a.price;
+                default:
+                    return 0; // Keep original order
+            }
+        });
+    }
 
     deckList.innerHTML = deck.map(card => {
         const legalityWarning = card.legality === 'banned' ? 
