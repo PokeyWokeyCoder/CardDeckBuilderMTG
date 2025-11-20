@@ -6,6 +6,7 @@ let hasNextPage = false;
 let nextPageUrl = null;
 let deck = JSON.parse(localStorage.getItem('mtgDeck')) || [];
 let currentFormat = localStorage.getItem('mtgCurrentFormat') || 'commander';
+let currentResults = []; // Store current search results for sorting
 
 // Format rules (same as main page)
 const formatRules = {
@@ -27,12 +28,15 @@ const paginationControls = document.getElementById('paginationControls');
 const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
 const pageInfo = document.getElementById('pageInfo');
+const searchSortSelect = document.getElementById('searchSortSelect');
+const sortControls = document.querySelector('.sort-controls');
 
 // Event listeners
 searchBtn.addEventListener('click', performSearch);
 clearBtn.addEventListener('click', clearAllFilters);
 prevBtn.addEventListener('click', goToPreviousPage);
 nextBtn.addEventListener('click', goToNextPage);
+searchSortSelect.addEventListener('change', applySortToResults);
 
 // Update deck count on load
 updateDeckCount();
@@ -57,7 +61,6 @@ document.querySelectorAll('.include-color').forEach(btn => {
         }
     });
 });
-
 document.querySelectorAll('.exclude-color').forEach(btn => {
     btn.addEventListener('click', () => {
         btn.classList.toggle('active');
@@ -259,11 +262,49 @@ async function performSearch(pageUrl = null) {
 }
 
 function displayResults(data) {
-    const cards = data.data;
+    // Store results for sorting
+    currentResults = data.data;
     
-    resultsCount.textContent = `Found ${data.total_cards} card${data.total_cards !== 1 ? 's' : ''} • Showing ${cards.length} per page`;
+    // Show sort controls
+    if (sortControls) {
+        sortControls.style.display = 'flex';
+    }
     
-    resultsContainer.innerHTML = cards.map(card => {
+    // Apply current sort
+    applySortToResults();
+}
+
+function applySortToResults() {
+    if (!currentResults || currentResults.length === 0) return;
+    
+    const sortBy = searchSortSelect?.value || 'name';
+    
+    // Sort the results
+    const sortedResults = [...currentResults].sort((a, b) => {
+        switch(sortBy) {
+            case 'name':
+                return a.name.localeCompare(b.name);
+            case 'cmc':
+                return (a.cmc || 0) - (b.cmc || 0);
+            case 'type':
+                return (a.type_line || '').localeCompare(b.type_line || '');
+            case 'rarity':
+                const rarityOrder = { common: 1, uncommon: 2, rare: 3, mythic: 4 };
+                return (rarityOrder[a.rarity] || 0) - (rarityOrder[b.rarity] || 0);
+            case 'price':
+                const priceA = parseFloat(a.prices?.usd || a.prices?.usd_foil || 999999);
+                const priceB = parseFloat(b.prices?.usd || b.prices?.usd_foil || 999999);
+                return priceB - priceA; // Descending
+            default:
+                return a.name.localeCompare(b.name);
+        }
+    });
+    
+    // Update results count
+    resultsCount.textContent = `Found ${sortedResults.length} card${sortedResults.length !== 1 ? 's' : ''}`;
+    
+    // Render sorted results
+    resultsContainer.innerHTML = sortedResults.map(card => {
         // Get the best image
         const imageUrl = card.image_uris?.normal || card.image_uris?.small || 
                         (card.card_faces && card.card_faces[0].image_uris?.normal) || '';

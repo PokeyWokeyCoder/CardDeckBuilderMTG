@@ -181,6 +181,16 @@
                     <p>Non-Lands: <span id="totalNonLands">0</span></p>
                     <p class="price-total">Total Price: $<span id="totalPrice">0.00</span></p>
                 </div>
+                <div class="deck-sort-controls">
+                    <label for="deckSortSelect">Sort by:</label>
+                    <select id="deckSortSelect" class="sort-dropdown">
+                        <option value="name">Card Name</option>
+                        <option value="cmc">Mana Cost</option>
+                        <option value="type">Card Type</option>
+                        <option value="quantity">Quantity</option>
+                        <option value="price">Price</option>
+                    </select>
+                </div>
                 <div id="deckList" class="deck-list">
                     <p class="placeholder">Your deck is empty. Add cards to get started!</p>
                 </div>
@@ -209,6 +219,14 @@
                         <option value="pauper">Pauper</option>
                     </select>
                     <input type="text" id="browseUserFilter" placeholder="Filter by user..." class="filter-input">
+                    <select id="communitySortSelect" class="sort-dropdown">
+                        <option value="time-desc">Newest First</option>
+                        <option value="time-asc">Oldest First</option>
+                        <option value="cards-desc">Most Cards</option>
+                        <option value="cards-asc">Fewest Cards</option>
+                        <option value="comments">Most Comments</option>
+                        <option value="name">Deck Name</option>
+                    </select>
                     <button id="refreshBrowseBtn" class="browse-btn">🔄 Refresh</button>
                 </div>
                 <div id="communityDecksList" class="community-decks-grid"></div>

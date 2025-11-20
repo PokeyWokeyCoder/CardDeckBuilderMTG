@@ -151,7 +151,19 @@
             <main class="results-section">
                 <div class="results-header">
                     <h2>Search Results</h2>
-                    <div id="resultsCount" class="results-count"></div>
+                    <div class="results-controls">
+                        <div class="sort-controls" style="display: none;">
+                            <label for="searchSortSelect">Sort by:</label>
+                            <select id="searchSortSelect" class="sort-dropdown">
+                                <option value="name">Card Name</option>
+                                <option value="cmc">Mana Cost</option>
+                                <option value="type">Card Type</option>
+                                <option value="rarity">Rarity</option>
+                                <option value="price">Price</option>
+                            </select>
+                        </div>
+                        <div id="resultsCount" class="results-count"></div>
+                    </div>
                 </div>
                 
                 <div id="resultsContainer" class="results-container">

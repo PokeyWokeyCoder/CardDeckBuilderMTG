@@ -105,6 +105,12 @@ importBtn.addEventListener('click', importDeckFromFile);
 logoutBtn.addEventListener('click', logout);
 saveDeckBtn.addEventListener('click', saveDeckToCloud);
 
+// Deck sort dropdown
+const deckSortSelect = document.getElementById('deckSortSelect');
+if (deckSortSelect) {
+    deckSortSelect.addEventListener('change', updateDeckDisplay);
+}
+
 // Initialize color filter buttons for include colors
 document.querySelectorAll('.include-color').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -442,8 +448,26 @@ function updateDeckDisplay() {
         return;
     }
 
-    // Sort deck by card name
-    deck.sort((a, b) => a.name.localeCompare(b.name));
+    // Get selected sort option
+    const sortBy = document.getElementById('deckSortSelect')?.value || 'name';
+    
+    // Sort deck based on selected option
+    deck.sort((a, b) => {
+        switch(sortBy) {
+            case 'name':
+                return a.name.localeCompare(b.name);
+            case 'cmc':
+                return (a.cmc || 0) - (b.cmc || 0);
+            case 'type':
+                return (a.type_line || '').localeCompare(b.type_line || '');
+            case 'quantity':
+                return b.quantity - a.quantity; // Descending
+            case 'price':
+                return b.price - a.price; // Descending
+            default:
+                return a.name.localeCompare(b.name);
+        }
+    });
 
     deckList.innerHTML = deck.map(card => {
         const legalityWarning = card.legality === 'banned' ? 
@@ -1019,6 +1043,7 @@ let currentViewedDeckId = null;
 document.getElementById('refreshBrowseBtn')?.addEventListener('click', loadCommunityDecks);
 document.getElementById('browseFormatFilter')?.addEventListener('change', loadCommunityDecks);
 document.getElementById('browseUserFilter')?.addEventListener('input', loadCommunityDecks);
+document.getElementById('communitySortSelect')?.addEventListener('change', loadCommunityDecks);
 
 // Modal controls
 const deckViewerModal = document.getElementById('deckViewerModal');
@@ -1052,6 +1077,7 @@ async function loadCommunityDecks() {
     try {
         const formatFilter = document.getElementById('browseFormatFilter').value;
         const userFilter = document.getElementById('browseUserFilter').value.toLowerCase();
+        const sortBy = document.getElementById('communitySortSelect')?.value || 'time-desc';
         
         // Simple query without orderBy to avoid index requirement
         const querySnapshot = await getDocs(collection(window.firebaseDb, 'decks'));
@@ -1064,18 +1090,40 @@ async function loadCommunityDecks() {
             const matchesUser = !userFilter || (data.owner && data.owner.toLowerCase().includes(userFilter));
             
             if (matchesFormat && matchesUser) {
+                const totalCards = data.cards.reduce((sum, card) => sum + card.quantity, 0);
                 decks.push({
                     id: doc.id,
+                    totalCards: totalCards,
+                    commentsCount: data.comments ? data.comments.length : 0,
                     ...data
                 });
             }
         });
         
-        // Sort by timestamp client-side
+        // Sort based on selection
         decks.sort((a, b) => {
-            const timeA = a.timestamp ? a.timestamp.seconds : 0;
-            const timeB = b.timestamp ? b.timestamp.seconds : 0;
-            return timeB - timeA;
+            switch(sortBy) {
+                case 'time-desc':
+                    const timeA = a.timestamp ? a.timestamp.seconds : 0;
+                    const timeB = b.timestamp ? b.timestamp.seconds : 0;
+                    return timeB - timeA;
+                case 'time-asc':
+                    const timeA2 = a.timestamp ? a.timestamp.seconds : 0;
+                    const timeB2 = b.timestamp ? b.timestamp.seconds : 0;
+                    return timeA2 - timeB2;
+                case 'cards-desc':
+                    return b.totalCards - a.totalCards;
+                case 'cards-asc':
+                    return a.totalCards - b.totalCards;
+                case 'comments':
+                    return b.commentsCount - a.commentsCount;
+                case 'name':
+                    return (a.name || '').localeCompare(b.name || '');
+                default:
+                    const timeA3 = a.timestamp ? a.timestamp.seconds : 0;
+                    const timeB3 = b.timestamp ? b.timestamp.seconds : 0;
+                    return timeB3 - timeA3;
+            }
         });
         
         if (decks.length === 0) {
@@ -1084,7 +1132,6 @@ async function loadCommunityDecks() {
         }
         
         communityDecksList.innerHTML = decks.map(deck => {
-            const totalCards = deck.cards.reduce((sum, card) => sum + card.quantity, 0);
             const totalPrice = deck.cards.reduce((sum, card) => sum + (card.price * card.quantity), 0);
             const date = deck.timestamp ? new Date(deck.timestamp.seconds * 1000).toLocaleDateString() : 'Unknown';
             
@@ -1096,7 +1143,7 @@ async function loadCommunityDecks() {
                         <span>📅 ${date}</span>
                     </div>
                     <div class="deck-summary">
-                        <span>🎴 ${totalCards} cards</span> • 
+                        <span>🎴 ${deck.totalCards} cards</span> • 
                         <span>🎯 ${deck.format || 'Unknown'}</span> • 
                         <span>💰 $${totalPrice.toFixed(2)}</span>
                     </div>
