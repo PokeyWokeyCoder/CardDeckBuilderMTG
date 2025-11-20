@@ -135,6 +135,238 @@ body.dark-mode .saved-deck-item:hover {
     background: #5a3a25;
 }
 
+body.dark-mode .deck-stats {
+    background: #2a2018;
+    border-color: #8b6f47;
+}
+
+body.dark-mode .deck-stats p,
+body.dark-mode .deck-stats span {
+    color: #e8dcc8;
+}
+
+body.dark-mode .stat-value {
+    color: #ffd700;
+}
+
+body.dark-mode .stat-label {
+    color: #d4a574;
+}
+
+body.dark-mode .deck-sort-controls {
+    background: #2a2018;
+    border-color: #8b6f47;
+}
+
+body.dark-mode .deck-sort-controls label {
+    color: #e8dcc8;
+}
+
+body.dark-mode .sort-dropdown {
+    background: #1a1410;
+    border-color: #8b6f47;
+    color: #e8dcc8;
+}
+
+body.dark-mode .deck-name-section input {
+    background: #1a1410;
+    border-color: #8b6f47;
+    color: #e8dcc8;
+}
+
+body.dark-mode .placeholder {
+    color: #9b8365;
+}
+
+body.dark-mode .toggle-results-btn {
+    background: #2a2018;
+    border-color: #8b6f47;
+    color: #e8dcc8;
+}
+
+body.dark-mode .toggle-results-btn:hover {
+    background: #5a3a25;
+}
+
+body.dark-mode .username-btn {
+    background: #2a2018;
+    border-color: #8b6f47;
+    color: #e8dcc8;
+}
+
+body.dark-mode .username-btn:hover {
+    background: #8b6f47;
+    color: #1a1410;
+}
+
+body.dark-mode .user-info span {
+    background: #2a2018;
+    border-color: #8b6f47;
+    color: #ffd700;
+}
+
+body.dark-mode .auth-btn {
+    background: #2a2018;
+    border-color: #8b6f47;
+    color: #e8dcc8;
+}
+
+body.dark-mode .auth-btn:hover {
+    background: #5a3a25;
+}
+
+body.dark-mode .auth-btn.primary {
+    background: #8b6f47;
+    color: #1a1410;
+    border-color: #8b6f47;
+}
+
+body.dark-mode .back-btn,
+body.dark-mode .advanced-search-link {
+    background: #2a2018;
+    border-color: #8b6f47;
+    color: #e8dcc8;
+}
+
+body.dark-mode .back-btn:hover,
+body.dark-mode .advanced-search-link:hover {
+    background: #5a3a25;
+}
+
+body.dark-mode .deck-finder-link {
+    background: #8b4a4a;
+    border-color: #8b6f47;
+}
+
+body.dark-mode .deck-finder-link:hover {
+    background: #9b5a5a;
+}
+
+body.dark-mode .community-deck-card {
+    background: #2a2018;
+    border-color: #8b6f47;
+}
+
+body.dark-mode .community-deck-card:hover {
+    background: #5a3a25;
+}
+
+body.dark-mode .view-deck-btn {
+    background: #8b6f47;
+    color: #1a1410;
+}
+
+body.dark-mode .deck-item-name,
+body.dark-mode .saved-deck-name,
+body.dark-mode .community-deck-title {
+    color: #ffd700;
+}
+
+body.dark-mode .deck-item-price,
+body.dark-mode .community-deck-stat {
+    color: #90ee90;
+}
+
+body.dark-mode .quantity-display {
+    color: #ffd700;
+}
+
+body.dark-mode .quantity-btn {
+    background: #2a2018;
+    border-color: #8b6f47;
+    color: #e8dcc8;
+}
+
+body.dark-mode .quantity-btn:hover {
+    background: #8b6f47;
+    color: #1a1410;
+}
+
+body.dark-mode .color-btn {
+    background: #2a2018;
+    border-color: #8b6f47;
+}
+
+body.dark-mode .color-btn.active {
+    border-color: #ffd700;
+    background: #5a3a25;
+}
+
+body.dark-mode .mana-cost {
+    background: #2a2018;
+    border-color: #8b6f47;
+    color: #ff9f43;
+}
+
+body.dark-mode .card-text {
+    background: #3d2817;
+    border-color: #8b6f47;
+    color: #d4a574;
+}
+
+body.dark-mode .price-value {
+    color: #90ee90;
+}
+
+body.dark-mode .price-label {
+    color: #e8dcc8;
+}
+
+body.dark-mode .deck-viewer-list,
+body.dark-mode .comments-section,
+body.dark-mode .proposed-changes-section {
+    background: #2a2018;
+    border-color: #8b6f47;
+}
+
+body.dark-mode .viewed-card-item,
+body.dark-mode .comment-item,
+body.dark-mode .proposed-change-item {
+    background: #3d2817;
+    border-color: #6b5535;
+}
+
+body.dark-mode .comment-author,
+body.dark-mode .change-author {
+    color: #ffd700;
+}
+
+body.dark-mode .comment-text,
+body.dark-mode .change-details {
+    color: #d4a574;
+}
+
+body.dark-mode .add-comment textarea,
+body.dark-mode .add-proposed-change textarea,
+body.dark-mode .add-proposed-change input,
+body.dark-mode .add-proposed-change select {
+    background: #1a1410;
+    border-color: #8b6f47;
+    color: #e8dcc8;
+}
+
+body.dark-mode .post-comment-btn,
+body.dark-mode .propose-change-btn {
+    background: #8b6f47;
+    color: #1a1410;
+}
+
+body.dark-mode .owner-action-btn {
+    background: #2a2018;
+    border-color: #8b6f47;
+    color: #e8dcc8;
+}
+
+body.dark-mode .owner-action-btn.accept {
+    background: #4a7c59;
+    color: #fefdfb;
+}
+
+body.dark-mode .owner-action-btn.reject {
+    background: #8b4a4a;
+    color: #fefdfb;
+}
+
 body.dark-mode .modal {
     background: rgba(26, 20, 16, 0.9);
 }
@@ -832,10 +1064,124 @@ h3 {
 
 /* Deck Builder Section */
 .deck-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-    margin-bottom: 20px;
+    background: #f9f7f3;
+    border: 2px solid #2c2416;
+    border-radius: 0;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+}
+
+.deck-stats p {
+    margin: 8px 0;
+    font-size: 16px;
+    font-weight: bold;
+    color: #2c2416;
+}
+
+.deck-stats span {
+    color: #2f5233;
+    font-size: 18px;
+}
+
+.deck-stats .price-total {
+    border-top: 2px solid #2c2416;
+    margin-top: 12px;
+    padding-top: 12px;
+    font-size: 18px;
+}
+
+.deck-stats .price-total span {
+    color: #2f5233;
+    font-size: 20px;
+}
+
+.deck-sort-controls {
+    background: #f9f7f3;
+    border: 2px solid #2c2416;
+    border-radius: 0;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.deck-sort-controls label {
+    font-weight: bold;
+    color: #2c2416;
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+.sort-dropdown {
+    flex: 1;
+    padding: 8px 12px;
+    border: 2px solid #2c2416;
+    border-radius: 0;
+    font-size: 14px;
+    background: #fefdfb;
+    color: #2c2416;
+    font-family: 'Georgia', serif;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.sort-dropdown:focus {
+    outline: none;
+    border-color: #4a3f31;
+    box-shadow: 3px 3px 0 rgba(44, 36, 22, 0.2);
+}
+
+.deck-name-section {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.deck-name-section input {
+    flex: 1;
+    padding: 10px 15px;
+    border: 2px solid #2c2416;
+    border-radius: 0;
+    font-size: 16px;
+    background: #fefdfb;
+    color: #2c2416;
+    font-family: 'Georgia', serif;
+}
+
+.deck-name-section input:focus {
+    outline: none;
+    border-color: #4a3f31;
+    box-shadow: 3px 3px 0 rgba(44, 36, 22, 0.2);
+}
+
+.placeholder {
+    text-align: center;
+    color: #6b5d4f;
+    font-style: italic;
+    padding: 20px;
+}
+
+.toggle-results-btn {
+    background: #f9f7f3;
+    border: 2px solid #2c2416;
+    border-radius: 0;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #2c2416;
+    font-family: 'Georgia', serif;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.toggle-results-btn:hover {
+    background: #f5f1e8;
+    transform: translate(-2px, -2px);
+    box-shadow: 3px 3px 0 rgba(44, 36, 22, 0.2);
 }
 
 .stat-card {
