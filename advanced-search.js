@@ -41,6 +41,11 @@ searchSortSelect.addEventListener('change', applySortToResults);
 // Update deck count on load
 updateDeckCount();
 
+// Perform initial search on page load
+document.addEventListener('DOMContentLoaded', () => {
+    performSearch();
+});
+
 function updateDeckCount() {
     const totalCards = deck.reduce((sum, card) => sum + card.quantity, 0);
     const deckCardCount = document.getElementById('deckCardCount');

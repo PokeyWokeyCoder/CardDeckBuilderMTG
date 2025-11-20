@@ -812,6 +812,9 @@ function checkLoginStatus() {
         saveDeckBtn.disabled = false;
         myDecksSection.style.display = 'block';
         loadUserDecks();
+    } else {
+        // Auto-login as default user if no one is logged in
+        loginAsUser('Poke');
     }
 }
 
