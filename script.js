@@ -7,6 +7,10 @@ let currentFormat = 'commander';
 let includeColors = [];
 let excludeColors = [];
 
+// Constants
+const MAX_SEARCH_RESULTS = 20;
+const BASIC_LAND_MAX_COPIES = 999;
+
 // Format rules
 const formatRules = {
     commander: {
@@ -279,6 +283,13 @@ async function searchCard() {
     }
 }
 
+// Helper function to escape HTML to prevent XSS
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
 // Display search results
 function displaySearchResults(cards) {
     if (cards.length === 0) {
@@ -286,7 +297,7 @@ function displaySearchResults(cards) {
         return;
     }
 
-    searchResults.innerHTML = cards.slice(0, 20).map(card => {
+    searchResults.innerHTML = cards.slice(0, MAX_SEARCH_RESULTS).map(card => {
         const legality = card.legalities[currentFormat];
         const legalityBadge = legality === 'legal' ? 
             '<span style="color: #4a7c59;">✓ Legal</span>' : 
@@ -299,8 +310,8 @@ function displaySearchResults(cards) {
         return `
             <div class="search-result-item" onclick="selectCard('${card.id}')">
                 <div>
-                    <span>${card.name}</span>
-                    <div style="font-size: 12px; color: #9b8365;">${card.set_name} (${card.set.toUpperCase()}) ${legalityBadge}</div>
+                    <span>${escapeHtml(card.name)}</span>
+                    <div style="font-size: 12px; color: #9b8365;">${escapeHtml(card.set_name)} (${card.set.toUpperCase()}) ${legalityBadge}</div>
                 </div>
             </div>
         `;
@@ -359,8 +370,6 @@ async function fetchCardPrintings(card) {
         
         // Store all printings globally so we can switch between them
         window.cardPrintings = data.data || [];
-        
-        console.log(`Found ${window.cardPrintings.length} printings for ${card.name}`);
     } catch (error) {
         console.error('Error fetching card printings:', error);
         window.cardPrintings = [];
@@ -654,8 +663,6 @@ function updateDeckDisplay() {
     // Get selected sort option
     const sortBy = document.getElementById('deckSortSelect')?.value || 'default';
     
-    console.log('Sorting by:', sortBy);
-    
     // Sort deck based on selected option (only if not default)
     if (sortBy !== 'default') {
         deck.sort((a, b) => {
@@ -685,7 +692,6 @@ function updateDeckDisplay() {
                     // Push N/A prices to the end when sorting descending
                     const priceA = a.price || 0;
                     const priceB = b.price || 0;
-                    console.log('Comparing prices:', a.name, priceA, 'vs', b.name, priceB);
                     if (priceA === 0) return 1;
                     if (priceB === 0) return -1;
                     return priceB - priceA;
@@ -729,7 +735,7 @@ function increaseQuantity(cardId) {
     
     // Get max copies based on format rules
     const rules = formatRules[currentFormat];
-    const maxCopies = card.name.match(/^(Plains|Island|Swamp|Mountain|Forest|Wastes)$/) && rules.allowBasicLands ? 999 : rules.maxCopies;
+    const maxCopies = card.name.match(/^(Plains|Island|Swamp|Mountain|Forest|Wastes)$/) && rules.allowBasicLands ? BASIC_LAND_MAX_COPIES : rules.maxCopies;
     
     if (card.quantity < maxCopies) {
         card.quantity++;

@@ -85,8 +85,6 @@ function generateRecommendations() {
         selections.color
     );
     
-    console.log('Generated recommendations:', recommendations.length, 'decks');
-    
     // Show results
     showStep('results');
     

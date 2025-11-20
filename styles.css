@@ -725,7 +725,7 @@ h3 {
 }
 
 .version-row:hover {
-    background: rgba(139, 111, 71, 0.4) !important;
+    background: rgba(139, 111, 71, 0.4);
 }
 
 .version-row:hover td {
@@ -908,8 +908,8 @@ h3 {
 }
 
 .price-total {
-    color: #4a7c59 !important;
-    font-size: 22px !important;
+    color: #4a7c59;
+    font-size: 22px;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
 
