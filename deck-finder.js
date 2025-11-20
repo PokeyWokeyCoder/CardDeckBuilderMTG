@@ -21,7 +21,8 @@ function showStep(stepNumber) {
     });
     
     // Show requested step
-    const step = document.getElementById(`step${stepNumber}`);
+    const stepId = stepNumber === 'results' ? 'results' : `step${stepNumber}`;
+    const step = document.getElementById(stepId);
     if (step) {
         step.classList.add('active');
         
