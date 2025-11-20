@@ -4,3 +4,14 @@ services:
     env: static
     buildCommand: echo "No build needed"
     staticPublishPath: .
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=0, must-revalidate
+    routes:
+      - type: rewrite
+        source: /advanced-search
+        destination: /advanced-search.html
+      - type: rewrite
+        source: /deck-finder
+        destination: /deck-finder.html
