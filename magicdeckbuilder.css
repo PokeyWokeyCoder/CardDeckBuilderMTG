@@ -6,6 +6,158 @@
     box-sizing: border-box;
 }
 
+/* Dark Mode Toggle Button */
+.dark-mode-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: #2c2416;
+    color: #fefdfb;
+    border: 2px solid #2c2416;
+    padding: 12px 16px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 rgba(44, 36, 22, 0.3);
+    transition: all 0.3s ease;
+}
+
+.dark-mode-toggle:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 rgba(44, 36, 22, 0.4);
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+    background: #1a1410;
+    background-image: 
+        repeating-linear-gradient(0deg, transparent, transparent 24px, rgba(255,255,255,.02) 24px, rgba(255,255,255,.02) 25px);
+    color: #e8dcc8;
+}
+
+body.dark-mode .dark-mode-toggle {
+    background: #fefdfb;
+    color: #2c2416;
+    border-color: #fefdfb;
+}
+
+body.dark-mode header {
+    background: #3d2817;
+    border-color: #8b6f47;
+    box-shadow: 8px 8px 0 rgba(139, 111, 71, 0.3);
+}
+
+body.dark-mode header::before {
+    border-color: #6b5535;
+}
+
+body.dark-mode header h1 {
+    color: #ffd700;
+}
+
+body.dark-mode section {
+    background: #3d2817;
+    border-color: #8b6f47;
+    box-shadow: 6px 6px 0 rgba(139, 111, 71, 0.3);
+}
+
+body.dark-mode section::before {
+    border-color: #6b5535;
+}
+
+body.dark-mode h2, body.dark-mode h3 {
+    color: #ffd700;
+    border-color: #8b6f47;
+}
+
+body.dark-mode .format-selector,
+body.dark-mode .filters-section,
+body.dark-mode .import-section,
+body.dark-mode .save-deck-section,
+body.dark-mode .share-section {
+    background: #2a2018;
+    border-color: #8b6f47;
+}
+
+body.dark-mode .format-info,
+body.dark-mode .card-info,
+body.dark-mode .stat-card,
+body.dark-mode .deck-list,
+body.dark-mode .search-results {
+    background: #2a2018;
+    border-color: #8b6f47;
+}
+
+body.dark-mode .search-input,
+body.dark-mode .deck-name-input,
+body.dark-mode .filter-input,
+body.dark-mode .filter-select,
+body.dark-mode .format-dropdown {
+    background: #1a1410;
+    border-color: #8b6f47;
+    color: #e8dcc8;
+}
+
+body.dark-mode .search-btn,
+body.dark-mode .save-deck-btn,
+body.dark-mode .share-btn,
+body.dark-mode .export-btn {
+    background: #8b6f47;
+    border-color: #8b6f47;
+    color: #1a1410;
+}
+
+body.dark-mode .add-btn,
+body.dark-mode .apply-filters-btn,
+body.dark-mode .import-btn,
+body.dark-mode .load-deck-btn {
+    background: #4a7c59;
+    border-color: #8b6f47;
+}
+
+body.dark-mode .clear-btn,
+body.dark-mode .clear-filters-btn,
+body.dark-mode .remove-btn,
+body.dark-mode .delete-deck-btn {
+    background: #8b4a4a;
+    border-color: #8b6f47;
+}
+
+body.dark-mode .deck-item,
+body.dark-mode .search-result-item,
+body.dark-mode .saved-deck-item {
+    border-color: #6b5535;
+}
+
+body.dark-mode .deck-item:hover,
+body.dark-mode .search-result-item:hover,
+body.dark-mode .saved-deck-item:hover {
+    background: #5a3a25;
+}
+
+body.dark-mode .modal {
+    background: rgba(26, 20, 16, 0.9);
+}
+
+body.dark-mode .modal-content {
+    background: #3d2817;
+    border-color: #8b6f47;
+}
+
+body.dark-mode .modal-header {
+    background: #2a2018;
+    border-color: #8b6f47;
+}
+
+body.dark-mode ::-webkit-scrollbar-track {
+    background: #2a2018;
+    border-color: #6b5535;
+}
+
+body.dark-mode ::-webkit-scrollbar-thumb {
+    background: #8b6f47;
+}
+
 body {
     font-family: 'Georgia', 'Times New Roman', serif;
     background: #f5f1e8;

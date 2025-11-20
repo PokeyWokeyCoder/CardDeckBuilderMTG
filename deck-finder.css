@@ -1,5 +1,89 @@
 /* Deck Finder Specific Styles - Style 3: Retro Newspaper */
 
+/* Dark Mode Toggle Button */
+.dark-mode-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: #2c2416;
+    color: #fefdfb;
+    border: 2px solid #2c2416;
+    padding: 12px 16px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 rgba(44, 36, 22, 0.3);
+    transition: all 0.3s ease;
+}
+
+.dark-mode-toggle:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 rgba(44, 36, 22, 0.4);
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+    background: #1a1410;
+    color: #e8dcc8;
+}
+
+body.dark-mode .dark-mode-toggle {
+    background: #fefdfb;
+    color: #2c2416;
+    border-color: #fefdfb;
+}
+
+body.dark-mode .subtitle {
+    color: #d4a574;
+}
+
+body.dark-mode .option-card,
+body.dark-mode .color-option-card,
+body.dark-mode .playstyle-card {
+    background: #3d2817;
+    border-color: #8b6f47;
+}
+
+body.dark-mode .option-card:hover,
+body.dark-mode .color-option-card:hover {
+    background: #5a3a25;
+}
+
+body.dark-mode .option-card.selected,
+body.dark-mode .color-option-card.selected {
+    background: #5a3a25;
+    border-color: #ffd700;
+}
+
+body.dark-mode .option-card h3,
+body.dark-mode .color-option-card h3 {
+    color: #ffd700;
+}
+
+body.dark-mode .navigation-buttons button {
+    background: #8b6f47;
+    border-color: #8b6f47;
+    color: #1a1410;
+}
+
+body.dark-mode .navigation-buttons button:hover {
+    background: #9b7f57;
+}
+
+body.dark-mode .summary-section {
+    background: #3d2817;
+    border-color: #8b6f47;
+}
+
+body.dark-mode .recommendation-card {
+    background: #2a2018;
+    border-color: #8b6f47;
+}
+
+body.dark-mode .recommendation-card:hover {
+    background: #5a3a25;
+}
+
 .subtitle {
     color: #2c2416;
     font-size: 1.2em;

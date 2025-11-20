@@ -6,6 +6,110 @@
     box-sizing: border-box;
 }
 
+/* Dark Mode Toggle Button */
+.dark-mode-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: #2c2416;
+    color: #fefdfb;
+    border: 2px solid #2c2416;
+    padding: 12px 16px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 rgba(44, 36, 22, 0.3);
+    transition: all 0.3s ease;
+}
+
+.dark-mode-toggle:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 rgba(44, 36, 22, 0.4);
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+    background: #1a1410;
+    background-image: 
+        repeating-linear-gradient(0deg, transparent, transparent 24px, rgba(255,255,255,.02) 24px, rgba(255,255,255,.02) 25px);
+    color: #e8dcc8;
+}
+
+body.dark-mode .dark-mode-toggle {
+    background: #fefdfb;
+    color: #2c2416;
+    border-color: #fefdfb;
+}
+
+body.dark-mode .container {
+    background: #2a2018;
+    border-color: #8b6f47;
+}
+
+body.dark-mode header {
+    background: #3d2817;
+    border-color: #8b6f47;
+    box-shadow: 8px 8px 0 rgba(139, 111, 71, 0.3);
+}
+
+body.dark-mode header::before {
+    border-color: #6b5535;
+}
+
+body.dark-mode header h1 {
+    color: #ffd700;
+}
+
+body.dark-mode .subtitle {
+    color: #d4a574;
+    border-color: #8b6f47;
+}
+
+body.dark-mode .game-card {
+    background: #3d2817;
+    border-color: #8b6f47;
+    color: #e8dcc8;
+    box-shadow: 5px 5px 0 rgba(139, 111, 71, 0.3);
+}
+
+body.dark-mode .game-card::before {
+    border-color: #6b5535;
+}
+
+body.dark-mode .game-card:hover {
+    background: #5a3a25;
+    box-shadow: 8px 8px 0 rgba(139, 111, 71, 0.4);
+}
+
+body.dark-mode .game-icon {
+    background: #2a2018;
+    border-color: #8b6f47;
+}
+
+body.dark-mode .game-card h2 {
+    color: #ffd700;
+}
+
+body.dark-mode .game-card p {
+    color: #d4a574;
+}
+
+body.dark-mode .game-status {
+    background: #8b6f47;
+    color: #2a2018;
+    border-color: #8b6f47;
+}
+
+body.dark-mode .game-card.mtg h2 { color: #ff9f43; }
+body.dark-mode .game-card.tarkov h2 { color: #90ee90; }
+body.dark-mode .game-card.deadlock h2 { color: #ff6b9d; }
+
+body.dark-mode footer {
+    background: #3d2817;
+    border-color: #8b6f47;
+    color: #9b8365;
+}
+
 body {
     font-family: 'Georgia', 'Times New Roman', serif;
     background: #f5f1e8;
